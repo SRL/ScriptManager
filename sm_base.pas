@@ -85,6 +85,7 @@ procedure TConfig.LoadFromXmlFile(aFileName: string);
       oFileItem.FileName:= VarToStr(oNode.Attributes.GetNamedItem('filename').NodeValue);
       oFileItem.Author  := VarToStr(oNode.Attributes.GetNamedItem('author').NodeValue);
       oFileItem.EMail   := VarToStr(oNode.Attributes.GetNamedItem('email').NodeValue);
+      oFileItem.Version := StrToFloat(VarToStr(oNode.Attributes.GetNamedItem('version').NodeValue));
 
       s:=VarToStr(oNode.Attributes.GetNamedItem('date_modify').NodeValue);
 

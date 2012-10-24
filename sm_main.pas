@@ -30,8 +30,6 @@ type
     ToolBar1: TToolBar;
     TreeView1: TTreeView;
     procedure FormCreate(Sender: TObject);
-    procedure ListView1Change(Sender: TObject; Item: TListItem;
-      Change: TItemChange);
     procedure ListView1Click(Sender: TObject);
     procedure TreeView1Click(Sender: TObject);
   private
@@ -60,11 +58,6 @@ begin
   LoadToTreeView;
 end;
 
-procedure TForm1.ListView1Change(Sender: TObject; Item: TListItem;
-  Change: TItemChange);
-begin
-
-end;
 
 procedure TForm1.ListView1Click(Sender: TObject);
 begin
@@ -106,6 +99,8 @@ begin
     oListItem.Caption:=aPackageItem.Files[i].FileName;
     oListItem.SubItems.Add(aPackageItem.Files[i].Author);
     oListItem.SubItems.Add(aPackageItem.Files[i].EMail);
+    oListItem.SubItems.Add(DateToStr(aPackageItem.Files[i].DateModify));
+    oListItem.SubItems.Add(FloatToStr(aPackageItem.Files[i].Version));
 
     //Items.AddObject(nil, FConfig.Items[i].Name, FConfig.Items[i]);
 

@@ -38,6 +38,7 @@ type
     Author: string;
     EMail: string;
     DateModify : TDateTime;
+    Version: extended;
     Description: string;
 
     SubFiles: TSubitemList;
