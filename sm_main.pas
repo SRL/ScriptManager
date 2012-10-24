@@ -79,7 +79,7 @@ var
   oListItem: TListItem;
 begin
   ListView1.Items.Clear;
-  oListItem:= ListView1.Items.Add;
+ // oListItem:= ListView1.Items.Add;
 
 //    oListItem:= ListView1.AddItem(aPackageItem.Files[i].FileName, aPackageItem.Files[i]);
  //
@@ -123,11 +123,15 @@ end;
 procedure TForm1.LoadToTreeView;
 var
   I: Integer;
+  TempNode: TTreeNode;
 begin
   TreeView1.Items.Clear;
-
   for I := 0 to FConfig.Count - 1 do
-    TreeView1.Items.AddObject(nil, FConfig.Items[i].Name, FConfig.Items[i]);
+    //TreeView1.Items.AddObject(nil, FConfig.Items[i].Name, FConfig.Items[i]);
+  begin
+     TempNode:=TreeView1.Items.Add(nil,FConfig.Items[i].Name);
+     TempNode.Data:=FConfig.Items[i];
+  end;
 
   LoadPackageToListView(TPackageItem(FConfig.Items[0]));
 end;
