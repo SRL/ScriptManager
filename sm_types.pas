@@ -2,16 +2,13 @@ unit sm_types;
 
 {$mode objfpc}{$H+}
 
-
 interface
 
 uses
   Classes, SysUtils, Variants;
 
-  type
-//---------------------------------------------------------
+type
   TFileItem = class(TCollectionItem)
-  //---------------------------------------------------------
   public
     FileName: string;
     Author: string;
@@ -25,9 +22,7 @@ uses
     destructor Destroy; override;
   end;
 
-  //-------------------------------------------------------------------
   TFileItemList = class(TCollection)
-  //-------------------------------------------------------------------
   private
     function GetItems(Index: Integer): TFileItem;
   public
@@ -37,9 +32,7 @@ uses
 
   end;
 
- //---------------------------------------------------------
   TPackageItem = class(TCollectionItem)
-  //---------------------------------------------------------
   public
     Name: string;
     Files: TFileItemList;
@@ -49,26 +42,36 @@ uses
   end;
 
 
-  //-------------------------------------------------------------------
   TPackageList = class(TCollection)
-  //-------------------------------------------------------------------
   private
     function GetItems(Index: Integer): TPackageItem;
   public
-    constructor Create;
     function AddItem: TPackageItem;
+    
+    constructor Create;
+
     property Items[Index: Integer]: TPackageItem read GetItems; default;
-
-
   end;
-
-
-
 
 implementation
 
+{ TFileItem }
 
+constructor TFileItem.Create(Col: TCollection);
+begin
+  inherited Create(Col);
 
+  SubFiles := TStringList.Create();
+end;
+
+destructor TFileItem.Destroy;
+begin
+  FreeAndNil(SubFiles);
+  
+  inherited Destroy;
+end;
+
+{ TFileItemList }
 
 constructor TFileItemList.Create;
 begin
@@ -77,13 +80,31 @@ end;
 
 function TFileItemList.AddItem: TFileItem;
 begin
-  Result := TFileItem (inherited Add);
+  Result := TFileItem(inherited Add());
 end;
 
 function TFileItemList.GetItems(Index: Integer): TFileItem;
 begin
   Result := TFileItem(inherited Items[Index]);
 end;
+
+{ TPackageItem }
+
+constructor TPackageItem.Create(Col: TCollection);
+begin
+  inherited Create(Col);
+  
+  Files := TFileItemList.Create();
+end;
+
+destructor TPackageItem.Destroy;
+begin
+  FreeAndNil(Files);
+  
+  inherited Destroy;
+end;
+
+{ TPackageList }
 
 constructor TPackageList.Create;
 begin
@@ -92,7 +113,7 @@ end;
 
 function TPackageList.AddItem: TPackageItem;
 begin
-  Result := TPackageItem (inherited Add);
+  Result := TPackageItem(inherited Add());
 end;
 
 function TPackageList.GetItems(Index: Integer): TPackageItem;
@@ -100,41 +121,4 @@ begin
   Result := TPackageItem(inherited Items[Index]);
 end;
 
-
-constructor TPackageItem.Create(Col: TCollection);
-begin
-  inherited Create(Col);
-  Files := TFileItemList.Create();
-end;
-
-destructor TPackageItem.Destroy;
-begin
-  FreeAndNil(Files);
-  inherited Destroy;
-end;
-
-constructor TFileItem.Create(Col: TCollection);
-begin
-  inherited Create(Col);
-  SubFiles := TStringList.Create();
-end;
-
-destructor TFileItem.Destroy;
-begin
-  FreeAndNil(SubFiles);
-  inherited Destroy;
-end;
-
-
-
-var
-  s: string;
-
-begin
-  s:=DateToStr(Now);
-  s:=DateToStr(Date);
-
-
-
 end.
-
