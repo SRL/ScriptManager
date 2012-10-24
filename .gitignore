@@ -1,0 +1,8 @@
+*.bak
+*.ppu
+*.o
+*.compiled
+*.or
+*.s
+*.res
+*.xml
