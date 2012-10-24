@@ -72,7 +72,8 @@ procedure TConfig.LoadFromXmlFile(aFileName: string);
     j: Integer;
     oFileItem: TFileItem;
     oNode,oNode1: TDOMNode;
-    s: string;
+    s,p: string;
+    sItem: TSubitem;
   begin
     for I := 0 to aParentNode.ChildNodes.Count - 1 do
     begin
@@ -98,8 +99,11 @@ procedure TConfig.LoadFromXmlFile(aFileName: string);
 
         if LowerCase(oNode1.NodeName)='subfile' then
         begin
-          s:=oNode1.Attributes.GetNamedItem('filename').NodeValue;
-          oFileItem.SubFiles.Add(s);
+          sItem:=oFileItem.SubFiles.AddItem;
+          sItem.FileName:=oNode1.Attributes.GetNamedItem('filename').NodeValue;
+          sItem.UnpPath:=oNode1.Attributes.GetNamedItem('filepath').NodeValue;
+
+         // sItem.Free;
         end else
 
         if LowerCase(oNode1.NodeName)='description' then

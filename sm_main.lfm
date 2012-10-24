@@ -47,8 +47,10 @@ object Form1: TForm1
         Top = 0
         Width = 216
         DefaultItemHeight = 17
+        ReadOnly = True
         TabOrder = 0
-        OnChanging = TreeView1Changing
+        OnClick = TreeView1Click
+        Options = [tvoAutoItemHeight, tvoHideSelection, tvoKeepCollapsedNodes, tvoReadOnly, tvoShowButtons, tvoShowLines, tvoShowRoot, tvoToolTips, tvoThemedDraw]
       end
     end
     object GroupBox2: TGroupBox
@@ -82,9 +84,10 @@ object Form1: TForm1
             Caption = 'Date'
             Width = 83
           end>
+        ScrollBars = ssVertical
         TabOrder = 0
         ViewStyle = vsReport
-        OnChange = ListView1Change
+        OnClick = ListView1Click
       end
     end
     object PageControl1: TPageControl
@@ -104,6 +107,8 @@ object Form1: TForm1
           Height = 144
           Top = 8
           Width = 488
+          ReadOnly = True
+          ScrollBars = ssVertical
           TabOrder = 0
         end
       end
