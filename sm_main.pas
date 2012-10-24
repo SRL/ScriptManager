@@ -77,6 +77,7 @@ procedure TForm1.TreeView1Click(Sender: TObject);
 begin
     if not assigned(TreeView1.Selected) then exit;
     LoadPackageToListView(TPackageItem(TreeView1.Selected.Data));
+    UpdateFileData (TFileItem(ListView1.Items[0].Data));
 end;
 
 procedure TForm1.LoadPackageToListView(aPackageItem: TPackageItem);
