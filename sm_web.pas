@@ -10,7 +10,7 @@ uses
 Type
 
 { TDownloader }
-
+TStringArray = array of string;
 TDownloader = Class(TObject)
   private
     FUrl: string;

@@ -46,15 +46,21 @@ type
     constructor Create(Col: TCollection); override;
     destructor Destroy; override;
   end;
+  TFileItemEx = class(TFileItem)
+    public
+    Installed: integer;
+  end;
 
   TFileItemList = class(TCollection)
   private
     function GetItems(Index: Integer): TFileItem;
+    function GetItemsEx(Index: Integer): TFileItemEx;
   public
     function AddItem: TFileItem;
+    function AddItemEx: TFileItemEx;
 
     constructor Create;
-
+    property ItemsEx[Index: Integer]: TFileItemEx read GetItemsEx;
     property Items[Index: Integer]: TFileItem read GetItems; default;
   end;
 
@@ -134,6 +140,16 @@ end;
 function TFileItemList.GetItems(Index: Integer): TFileItem;
 begin
   Result := TFileItem(inherited Items[Index]);
+end;
+
+function TFileItemList.AddItemEx: TFileItemEx;
+begin
+  Result := TFileItemEx(inherited Add());
+end;
+
+function TFileItemList.GetItemsEx(Index: Integer): TFileItemEx;
+begin
+  Result := TFileItemEx(inherited Items[Index]);
 end;
 
 constructor TFileItemList.Create;

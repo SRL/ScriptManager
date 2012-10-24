@@ -9,12 +9,16 @@ uses
 
 type
   //-------------------------------------------------------------------
-  TConfig = class(TPackageList)
+
+  { TScriptStorage }
+
+  TScriptStorage = class(TPackageList)
   //-------------------------------------------------------------------
   public
-    procedure Compare(aConfig: TConfig; aStrings: TStringList);
+    procedure Compare(aConfig: TScriptStorage; aStrings: TStringList);
 
     procedure LoadFromXmlFile(aFileName: string);
+    procedure LoadLocalXMLRegistry(aFileName: string);
  //   procedure LoadTestDataFromDir(aDir: string);
   end;
 
@@ -22,7 +26,7 @@ implementation
 
 
 //----------------------------------------------------------------
-procedure TConfig.Compare(aConfig: TConfig; aStrings: TStringList);
+procedure TScriptStorage.Compare(aConfig: TScriptStorage; aStrings: TStringList);
 //----------------------------------------------------------------
 var
   I: Integer;
@@ -63,7 +67,7 @@ begin
 end;
 
 //-------------------------------------------------------------------
-procedure TConfig.LoadFromXmlFile(aFileName: string);
+procedure TScriptStorage.LoadFromXmlFile(aFileName: string);
 //-------------------------------------------------------------------
 
   procedure DoLoadFiles(aParentNode: TDOMNode; aPackageItem: TPackageItem);
@@ -86,6 +90,89 @@ procedure TConfig.LoadFromXmlFile(aFileName: string);
       oFileItem.Author  := VarToStr(oNode.Attributes.GetNamedItem('author').NodeValue);
       oFileItem.EMail   := VarToStr(oNode.Attributes.GetNamedItem('email').NodeValue);
       oFileItem.Version := StrToFloat(VarToStr(oNode.Attributes.GetNamedItem('version').NodeValue));
+
+      s:=VarToStr(oNode.Attributes.GetNamedItem('date_modify').NodeValue);
+
+      oFileItem.DateModify := StrToDateTime(s);
+
+//      oFileItem.date_modify
+
+
+      for j := 0 to oNode.ChildNodes.Count - 1 do
+      begin
+        oNode1:=oNode.ChildNodes[j];
+
+        if LowerCase(oNode1.NodeName)='subfile' then
+        begin
+          sItem:=oFileItem.SubFiles.AddItem;
+          sItem.FileName:=oNode1.Attributes.GetNamedItem('filename').NodeValue;
+          sItem.UnpPath:=oNode1.Attributes.GetNamedItem('filepath').NodeValue;
+
+         // sItem.Free;
+        end else
+
+        if LowerCase(oNode1.NodeName)='description' then
+        begin
+          oFileItem.Description:=oNode1.TextContent;
+        end;
+
+      end;
+
+    end;
+  end;
+
+
+  procedure DoLoadPackages(aParentNode: TDOMNode);
+  var
+    I: Integer;
+    oNode: TDOMNode;
+    oPackageItem: TPackageItem;
+  begin
+    for I := 0 to aParentNode.ChildNodes.Count - 1 do
+    begin
+      oPackageItem:=AddItem;
+
+      oNode:=aParentNode.ChildNodes[i];
+      oPackageItem.Name:= oNode.Attributes.GetNamedItem('name').NodeValue;
+
+      DoLoadFiles(oNode, oPackageItem);
+    end;
+  end;
+
+var
+  oXmlDocument: TXmlDocument;
+begin
+ // oXmlDocument:=TXmlDocument.Create(Application);
+ // oXmlDocument.LoadFromFile(aFileName);
+  ReadXMLFile(oXmlDocument,aFileName);
+
+  DoLoadPackages (oXmlDocument.DocumentElement);
+
+  FreeAndNil(oXmlDocument);
+end;
+
+procedure TScriptStorage.LoadLocalXMLRegistry(aFileName: string);
+  procedure DoLoadFiles(aParentNode: TDOMNode; aPackageItem: TPackageItem);
+  var
+    I: Integer;
+    j: Integer;
+    oFileItem: TFileItemEx;
+    oNode,oNode1: TDOMNode;
+    s,p: string;
+    sItem: TSubitem;
+  begin
+    for I := 0 to aParentNode.ChildNodes.Count - 1 do
+    begin
+      oFileItem:=aPackageItem.Files.AddItemEx;
+
+      oNode:=aParentNode.ChildNodes[i];
+
+
+      oFileItem.FileName:= VarToStr(oNode.Attributes.GetNamedItem('filename').NodeValue);
+      oFileItem.Author  := VarToStr(oNode.Attributes.GetNamedItem('author').NodeValue);
+      oFileItem.EMail   := VarToStr(oNode.Attributes.GetNamedItem('email').NodeValue);
+      oFileItem.Version := StrToFloat(VarToStr(oNode.Attributes.GetNamedItem('version').NodeValue));
+      oFileItem.Installed:=StrToInt(VarToStr(oNode.Attributes.GetNamedItem('installed').NodeValue));
 
       s:=VarToStr(oNode.Attributes.GetNamedItem('date_modify').NodeValue);
 
@@ -180,7 +267,7 @@ begin
 end;
 }
 
-
+ {
 procedure Test();
 var
   oConfig_local: TConfig;
@@ -204,7 +291,7 @@ begin
   oConfig_local.Compare(oConfig_server, oStrings);
 
 end;
-
+   }
 
 begin
   ShortDateFormat:='dd.mm.yyyy';

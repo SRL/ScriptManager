@@ -43,7 +43,7 @@ type
 
 var
   Form1: TForm1;
-  FConfig: TConfig;
+  Repository,Local: TScriptStorage;
 
 implementation
 
@@ -53,8 +53,10 @@ implementation
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
-  FConfig := TConfig.Create();
-  FConfig.LoadFromXmlFile('j:\server.xml');
+  Repository := TScriptStorage.Create();
+  Repository.LoadFromXmlFile('j:\server.xml');
+  Local := TScriptStorage.Create();
+  Local.LoadLocalXMLRegistry('j:\local.xml');
   LoadToTreeView;
 end;
 
@@ -121,14 +123,14 @@ var
   TempNode: TTreeNode;
 begin
   TreeView1.Items.Clear;
-  for I := 0 to FConfig.Count - 1 do
+  for I := 0 to Repository.Count - 1 do
     //TreeView1.Items.AddObject(nil, FConfig.Items[i].Name, FConfig.Items[i]);
   begin
-     TempNode:=TreeView1.Items.Add(nil,FConfig.Items[i].Name);
-     TempNode.Data:=FConfig.Items[i];
+     TempNode:=TreeView1.Items.Add(nil,Repository.Items[i].Name);
+     TempNode.Data:=Repository.Items[i];
   end;
 
-  LoadPackageToListView(TPackageItem(FConfig.Items[0]));
+  LoadPackageToListView(TPackageItem(Repository.Items[0]));
 end;
 
 procedure TForm1.UpdateFileData(aFileItem: TFileItem);
