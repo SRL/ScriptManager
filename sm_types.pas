@@ -26,10 +26,11 @@ type
   private
     function GetItems(Index: Integer): TFileItem;
   public
-    constructor Create;
     function AddItem: TFileItem;
-    property Items[Index: Integer]: TFileItem read GetItems; default;
 
+    constructor Create;
+
+    property Items[Index: Integer]: TFileItem read GetItems; default;
   end;
 
   TPackageItem = class(TCollectionItem)
@@ -73,11 +74,6 @@ end;
 
 { TFileItemList }
 
-constructor TFileItemList.Create;
-begin
-  inherited Create(TFileItem);
-end;
-
 function TFileItemList.AddItem: TFileItem;
 begin
   Result := TFileItem(inherited Add());
@@ -86,6 +82,11 @@ end;
 function TFileItemList.GetItems(Index: Integer): TFileItem;
 begin
   Result := TFileItem(inherited Items[Index]);
+end;
+
+constructor TFileItemList.Create;
+begin
+  inherited Create(TFileItem);
 end;
 
 { TPackageItem }
@@ -106,11 +107,6 @@ end;
 
 { TPackageList }
 
-constructor TPackageList.Create;
-begin
-  inherited Create(TPackageItem);
-end;
-
 function TPackageList.AddItem: TPackageItem;
 begin
   Result := TPackageItem(inherited Add());
@@ -119,6 +115,11 @@ end;
 function TPackageList.GetItems(Index: Integer): TPackageItem;
 begin
   Result := TPackageItem(inherited Items[Index]);
+end;
+
+constructor TPackageList.Create;
+begin
+  inherited Create(TPackageItem);
 end;
 
 end.
