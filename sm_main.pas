@@ -22,7 +22,11 @@ type
     MenuItem1: TMenuItem;
     MenuItem2: TMenuItem;
     MenuItem3: TMenuItem;
+    MenuItem4: TMenuItem;
+    MenuItem5: TMenuItem;
+    MenuItem6: TMenuItem;
     PageControl1: TPageControl;
+    ManagerPopup: TPopupMenu;
     SMPanel: TPanel;
     StatusBar1: TStatusBar;
     TabSheet1: TTabSheet;
@@ -31,9 +35,11 @@ type
     TreeView1: TTreeView;
     procedure FormCreate(Sender: TObject);
     procedure ListView1Click(Sender: TObject);
+    procedure ListView1MouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
     procedure TreeView1Click(Sender: TObject);
   private
-    procedure LoadPackageToListView(aPackageItem: TPackageItem);
+    procedure LoadPackageToListView(aPackageItem: TPackageItem;index: integer);
     procedure LoadToTreeView;
     procedure UpdateFileData(aFileItem: TFileItem);
     { private declarations }
@@ -44,6 +50,7 @@ type
 var
   Form1: TForm1;
   Repository,Local: TScriptStorage;
+  ManagerPopup: TPopupMenu;
 
 implementation
 
@@ -55,8 +62,11 @@ procedure TForm1.FormCreate(Sender: TObject);
 begin
   Repository := TScriptStorage.Create();
   Repository.LoadFromXmlFile('j:\server.xml');
+ // Repository.ToFileItemEx;
+ // Repository.SaveLocalXMLRegistry('j:\saved_registry.xml');
   Local := TScriptStorage.Create();
-  Local.LoadLocalXMLRegistry('j:\local.xml');
+  Local.LoadLocalXMLRegistry('j:\saved_registry.xml');
+  //Repository.SaveLocalXMLRegistry('j:\test.xml');
   LoadToTreeView;
 end;
 
@@ -67,29 +77,27 @@ begin
   UpdateFileData (TFileItem(ListView1.Selected.Data));
 end;
 
+procedure TForm1.ListView1MouseDown(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+begin
+
+end;
+
 
 procedure TForm1.TreeView1Click(Sender: TObject);
 begin
     if not assigned(TreeView1.Selected) then exit;
-    LoadPackageToListView(TPackageItem(TreeView1.Selected.Data));
+    LoadPackageToListView(TPackageItem(TreeView1.Selected.Data),TreeView1.Selected.Index);
     UpdateFileData (TFileItem(ListView1.Items[0].Data));
 end;
 
-procedure TForm1.LoadPackageToListView(aPackageItem: TPackageItem);
+procedure TForm1.LoadPackageToListView(aPackageItem: TPackageItem;index: integer);
 var
   I: Integer;
   oListItem: TListItem;
+  oFileItem: TFileItemEx;
 begin
   ListView1.Items.Clear;
- // oListItem:= ListView1.Items.Add;
-//    oListItem:= ListView1.AddItem(aPackageItem.Files[i].FileName, aPackageItem.Files[i]);
- //
- // oListItem.Data:=aPackageItem.Files[i];
-//  oListItem.Caption:='1';
-//  oListItem.SubItems.Add('2');
-//  Memo1.Lines.Text:=aPackageItem.
-  //d:= aPackageItem.Files.GetCount();
-
   for I := 0 to aPackageItem.Files.Count - 1 do
   begin
     oListItem:= ListView1.Items.Add;
@@ -103,7 +111,12 @@ begin
     oListItem.SubItems.Add(aPackageItem.Files[i].EMail);
     oListItem.SubItems.Add(DateToStr(aPackageItem.Files[i].DateModify));
     oListItem.SubItems.Add(FloatToStr(aPackageItem.Files[i].Version));
-
+    oFileItem:=local.items[index].Files.ItemsEx[i];
+    case oFileItem.Installed of
+    0:oListItem.SubItems.Add('Not installed');
+    1:oListItem.SubItems.Add('Installed');
+    end;
+    UpdateFileData(TFileItem(oListItem.Data));
     //Items.AddObject(nil, FConfig.Items[i].Name, FConfig.Items[i]);
 
   end;
@@ -130,7 +143,7 @@ begin
      TempNode.Data:=Repository.Items[i];
   end;
 
-  LoadPackageToListView(TPackageItem(Repository.Items[0]));
+  LoadPackageToListView(TPackageItem(Repository.Items[0]),0);
 end;
 
 procedure TForm1.UpdateFileData(aFileItem: TFileItem);

@@ -1,11 +1,11 @@
 object Form1: TForm1
-  Left = 262
+  Left = 337
   Height = 633
-  Top = 212
-  Width = 889
+  Top = 165
+  Width = 914
   Caption = 'Script Manager'
   ClientHeight = 613
-  ClientWidth = 889
+  ClientWidth = 914
   Menu = MainMenu1
   OnCreate = FormCreate
   LCLVersion = '0.9.30.4'
@@ -13,7 +13,7 @@ object Form1: TForm1
     Left = 0
     Height = 26
     Top = 0
-    Width = 889
+    Width = 914
     Caption = 'ToolBar1'
     TabOrder = 0
   end
@@ -21,16 +21,16 @@ object Form1: TForm1
     Left = 0
     Height = 23
     Top = 590
-    Width = 889
+    Width = 914
     Panels = <>
   end
   object SMPanel: TPanel
     Left = 0
     Height = 568
     Top = 24
-    Width = 888
+    Width = 912
     ClientHeight = 568
-    ClientWidth = 888
+    ClientWidth = 912
     TabOrder = 2
     object GroupBox1: TGroupBox
       Left = 0
@@ -57,16 +57,16 @@ object Form1: TForm1
       Left = 248
       Height = 376
       Top = 1
-      Width = 632
+      Width = 656
       Caption = 'Scripts list:'
       ClientHeight = 358
-      ClientWidth = 628
+      ClientWidth = 652
       TabOrder = 1
       object ListView1: TListView
         Left = 6
         Height = 353
         Top = 0
-        Width = 616
+        Width = 640
         Columns = <        
           item
             Caption = 'Name'
@@ -90,31 +90,33 @@ object Form1: TForm1
           end        
           item
             Caption = 'Installed'
-            Width = 68
+            Width = 92
           end>
+        PopupMenu = ManagerPopup
         ScrollBars = ssVertical
         TabOrder = 0
         ViewStyle = vsReport
         OnClick = ListView1Click
+        OnMouseDown = ListView1MouseDown
       end
     end
     object PageControl1: TPageControl
       Left = 248
       Height = 184
       Top = 376
-      Width = 632
+      Width = 656
       ActivePage = TabSheet1
       TabIndex = 0
       TabOrder = 2
       object TabSheet1: TTabSheet
         Caption = 'Description'
         ClientHeight = 156
-        ClientWidth = 624
+        ClientWidth = 648
         object Memo1: TMemo
           Left = 4
           Height = 144
           Top = 8
-          Width = 616
+          Width = 640
           ReadOnly = True
           ScrollBars = ssVertical
           TabOrder = 0
@@ -123,12 +125,12 @@ object Form1: TForm1
       object TabSheet2: TTabSheet
         Caption = 'Additional files'
         ClientHeight = 156
-        ClientWidth = 624
+        ClientWidth = 648
         object ListBox1: TListBox
           Left = 4
           Height = 144
           Top = 8
-          Width = 616
+          Width = 640
           ItemHeight = 0
           TabOrder = 0
         end
@@ -146,6 +148,19 @@ object Form1: TForm1
     end
     object MenuItem3: TMenuItem
       Caption = 'Settings'
+    end
+  end
+  object ManagerPopup: TPopupMenu
+    left = 322
+    top = 78
+    object MenuItem4: TMenuItem
+      Caption = 'Install'
+    end
+    object MenuItem5: TMenuItem
+      Caption = 'Uninstall'
+    end
+    object MenuItem6: TMenuItem
+      Caption = 'Force update'
     end
   end
 end
