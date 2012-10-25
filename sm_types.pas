@@ -8,28 +8,59 @@ uses
   Classes, SysUtils, Variants;
 
 type
+
+  { TSubItem }
+
+  TSubItem = class(TCollectionItem)
+  public
+    FileName: string;
+    UnpPath: string;
+    constructor Create(Col: TCollection); override;
+    destructor Destroy; override;
+  end;
+
+  { TSubitemList }
+
+  TSubitemList = class(TCollection)
+  private
+    function GetItems(Index: Integer): TSubItem;
+  public
+    function AddItem: TSubItem;
+
+    constructor Create;
+
+    property Items[Index: Integer]: TSubItem read GetItems; default;
+  end;
+
   TFileItem = class(TCollectionItem)
   public
     FileName: string;
     Author: string;
     EMail: string;
     DateModify : TDateTime;
+    Version: extended;
     Description: string;
 
-    SubFiles: TStringList;
+    SubFiles: TSubitemList;
 
     constructor Create(Col: TCollection); override;
     destructor Destroy; override;
+  end;
+  TFileItemEx = class(TFileItem)
+    public
+    Installed: integer;
   end;
 
   TFileItemList = class(TCollection)
   private
     function GetItems(Index: Integer): TFileItem;
+    function GetItemsEx(Index: Integer): TFileItemEx;
   public
     function AddItem: TFileItem;
+    function AddItemEx: TFileItemEx;
 
     constructor Create;
-
+    property ItemsEx[Index: Integer]: TFileItemEx read GetItemsEx;
     property Items[Index: Integer]: TFileItem read GetItems; default;
   end;
 
@@ -56,20 +87,47 @@ type
 
 implementation
 
+constructor TSubItem.Create(Col: TCollection);
+begin
+  inherited Create(Col);
+end;
+
+destructor TSubItem.Destroy;
+begin
+  inherited Destroy;
+end;
+
+{ TSubitemList }
+
+function TSubitemList.GetItems(Index: Integer): TSubItem;
+begin
+  Result := TSubItem(inherited Items[Index]);
+end;
+
+function TSubitemList.AddItem: TSubItem;
+begin
+  Result := TSubItem(inherited Add());
+end;
+
+constructor TSubitemList.Create;
+begin
+  inherited Create(TSubItem);
+end;
+
 { TFileItem }
 
 constructor TFileItem.Create(Col: TCollection);
 begin
   inherited Create(Col);
-
-  SubFiles := TStringList.Create();
+  SubFiles:=TSubitemList.Create;
+ // SubFiles := TList.Create();
 end;
 
 destructor TFileItem.Destroy;
 begin
   FreeAndNil(SubFiles);
   
-  inherited Destroy;
+ // inherited Destroy;
 end;
 
 { TFileItemList }
@@ -82,6 +140,16 @@ end;
 function TFileItemList.GetItems(Index: Integer): TFileItem;
 begin
   Result := TFileItem(inherited Items[Index]);
+end;
+
+function TFileItemList.AddItemEx: TFileItemEx;
+begin
+  Result := TFileItemEx(inherited Add());
+end;
+
+function TFileItemList.GetItemsEx(Index: Integer): TFileItemEx;
+begin
+  Result := TFileItemEx(inherited Items[Index]);
 end;
 
 constructor TFileItemList.Create;
