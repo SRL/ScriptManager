@@ -38,8 +38,9 @@ type
     procedure ListView1MouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure TreeView1Click(Sender: TObject);
+    procedure InstallClick(Sender: TObject);
   private
-    procedure LoadPackageToListView(aPackageItem: TPackageItem;index: integer);
+    procedure LoadPackageToListView(aPackageItem: TPackageItem;idx: integer);
     procedure LoadToTreeView;
     procedure UpdateFileData(aFileItem: TFileItem);
     { private declarations }
@@ -51,6 +52,7 @@ var
   Form1: TForm1;
   Repository,Local: TScriptStorage;
   ManagerPopup: TPopupMenu;
+  Index: integer;//current selected category index
 
 implementation
 
@@ -61,11 +63,11 @@ implementation
 procedure TForm1.FormCreate(Sender: TObject);
 begin
   Repository := TScriptStorage.Create();
-  Repository.LoadFromXmlFile('j:\server.xml');
+  Repository.LoadFromXmlFile('E:\Coding\ScriptManager\server.xml');
  // Repository.ToFileItemEx;
  // Repository.SaveLocalXMLRegistry('j:\saved_registry.xml');
   Local := TScriptStorage.Create();
-  Local.LoadLocalXMLRegistry('j:\saved_registry.xml');
+  Local.LoadLocalXMLRegistry('E:\Coding\ScriptManager\saved_registry.xml');
   //Repository.SaveLocalXMLRegistry('j:\test.xml');
   LoadToTreeView;
 end;
@@ -79,19 +81,46 @@ end;
 
 procedure TForm1.ListView1MouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
+var
+  oFileItem: TFileItemEx;
 begin
-
+  if not assigned(ListView1.Selected) then exit;
+  if (button=mbRight)  then
+   begin
+     oFileItem:=Local.Items[index].Files.ItemsEx[ListView1.Selected.Index];
+     case oFileItem.Installed of
+       0:ManagerPopup.Items[0].Caption:='Install';
+       1:ManagerPopup.Items[0].Caption:='Uninstall';
+    end;
+     ManagerPopup.PopUp;
+   end;
 end;
 
 
 procedure TForm1.TreeView1Click(Sender: TObject);
 begin
     if not assigned(TreeView1.Selected) then exit;
-    LoadPackageToListView(TPackageItem(TreeView1.Selected.Data),TreeView1.Selected.Index);
+    index:=TreeView1.Selected.Index;
+    LoadPackageToListView(TPackageItem(TreeView1.Selected.Data),Index);
     UpdateFileData (TFileItem(ListView1.Items[0].Data));
 end;
 
-procedure TForm1.LoadPackageToListView(aPackageItem: TPackageItem;index: integer);
+procedure TForm1.InstallClick(Sender: TObject);
+var
+   oFileItem: TFileItemEx;
+begin
+   oFileItem:=Local.Items[index].Files.ItemsEx[ListView1.Selected.Index];
+   case oFileItem.Installed of
+       0:oFileItem.Installed:=1;
+       1:oFileItem.Installed:=0;
+    end;
+   Local.Items[index].Files.ItemsEx[ListView1.Selected.Index].Installed:=oFileItem.Installed;
+   LoadPackageToListView(Local.Items[index],index);
+  // oFileItem
+
+end;
+
+procedure TForm1.LoadPackageToListView(aPackageItem: TPackageItem;idx: integer);
 var
   I: Integer;
   oListItem: TListItem;
@@ -111,7 +140,7 @@ begin
     oListItem.SubItems.Add(aPackageItem.Files[i].EMail);
     oListItem.SubItems.Add(DateToStr(aPackageItem.Files[i].DateModify));
     oListItem.SubItems.Add(FloatToStr(aPackageItem.Files[i].Version));
-    oFileItem:=local.items[index].Files.ItemsEx[i];
+    oFileItem:=local.items[idx].Files.ItemsEx[i];
     case oFileItem.Installed of
     0:oListItem.SubItems.Add('Not installed');
     1:oListItem.SubItems.Add('Installed');
@@ -142,7 +171,7 @@ begin
      TempNode:=TreeView1.Items.Add(nil,Repository.Items[i].Name);
      TempNode.Data:=Repository.Items[i];
   end;
-
+  Index:=0;
   LoadPackageToListView(TPackageItem(Repository.Items[0]),0);
 end;
 

@@ -92,7 +92,6 @@ object Form1: TForm1
             Caption = 'Installed'
             Width = 92
           end>
-        PopupMenu = ManagerPopup
         ScrollBars = ssVertical
         TabOrder = 0
         ViewStyle = vsReport
@@ -155,6 +154,7 @@ object Form1: TForm1
     top = 78
     object MenuItem4: TMenuItem
       Caption = 'Install'
+      OnClick = InstallClick
     end
     object MenuItem5: TMenuItem
       Caption = 'Uninstall'
