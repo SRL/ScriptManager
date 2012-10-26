@@ -21,6 +21,7 @@ type
     procedure LoadFromXmlFile(aFileName: string);
     procedure LoadLocalXMLRegistry(aFileName: string);
     procedure SaveLocalXMLRegistry(aFileName: string);
+    procedure UpdateLocalXMLRegistry(aFileName: string);
  //   procedure LoadTestDataFromDir(aDir: string);
   end;
 
@@ -240,26 +241,20 @@ var
   vRoot,ParentNode,PackageNode,TempNode,Description,FileItemNode,SubFileNode: TDOMNode;
   i,d,j: integer;
   s: string;
-  oFileItem: TFileItemEx;
+  oFileItem: TFileItem;
 begin
   oXmlDocument:=TXmlDocument.Create;
-  //oXmlDocument.Version:='1.0';
   oXmlDocument.Encoding:='UTF-8';
-  //oXmlDocument.Encoding:='windows-1251';
   vRoot:=oXmlDocument.CreateElement('Document');
- { TDOMElement(vRoot).SetAttribute('xmlns','http://www.opengis.net/kml/2.2');
-  TDOMElement(vRoot).SetAttribute('xmlns:gx','http://www.opengis.net/kml/2.2'); }
   oXmlDocument.AppendChild(vroot);
   vRoot:=oXMLDocument.DocumentElement;
- // ParentNode:=oXmlDocument.CreateElement('Document');
- // vRoot.AppendChild(ParentNode);
   for i:=0 to count -1 do
      begin
        PackageNode:=oXmlDocument.CreateElement('structure');
        TDOMElement(PackageNode).SetAttribute('name',Items[i].Name);
          for d:=0 to Items[i].Files.Count - 1 do
             begin
-              oFileItem:=Items[i].Files.ItemsEx[d];
+              oFileItem:=Items[i].Files.Items[d];
               FileItemNode:=oXMLDocument.CreateElement('file');
               TDOMElement(FileItemNode).SetAttribute('filename',oFileItem.FileName);
               TDOMElement(FileItemNode).SetAttribute('author',oFileItem.Author);
@@ -285,11 +280,60 @@ begin
              PackageNode.AppendChild(FileItemNode);
             end;
        vRoot.AppendChild(PackageNode);
-     // vRoot.ChildNodes.Item[0].AppendChild(PackageNode);
      end;
   WriteXMLFile (oXmlDocument,aFileName);
   FreeAndNil(oXmlDocument);
 end;
+
+procedure TScriptStorage.UpdateLocalXMLRegistry(aFileName: string);
+var
+  oXmlDocument: TXmlDocument;
+  vRoot,ParentNode,PackageNode,TempNode,Description,FileItemNode,SubFileNode: TDOMNode;
+  i,d,j: integer;
+  s: string;
+  oFileItem: TFileItemEx;
+begin
+  oXmlDocument:=TXmlDocument.Create;
+  oXmlDocument.Encoding:='UTF-8';
+  vRoot:=oXmlDocument.CreateElement('Document');
+  oXmlDocument.AppendChild(vroot);
+  vRoot:=oXMLDocument.DocumentElement;
+  for i:=0 to count -1 do
+     begin
+       PackageNode:=oXmlDocument.CreateElement('structure');
+       TDOMElement(PackageNode).SetAttribute('name',Items[i].Name);
+         for d:=0 to Items[i].Files.Count - 1 do
+            begin
+              oFileItem:=Items[i].Files.ItemsEx[d];
+              FileItemNode:=oXMLDocument.CreateElement('file');
+              TDOMElement(FileItemNode).SetAttribute('filename',oFileItem.FileName);
+              TDOMElement(FileItemNode).SetAttribute('author',oFileItem.Author);
+              TDOMElement(FileItemNode).SetAttribute('email',oFileItem.EMail);
+              TDOMElement(FileItemNode).SetAttribute('version',FloatToStr(oFileItem.Version));
+              TDOMElement(FileItemNode).SetAttribute('installed',IntToStr(oFileItem.Installed));
+              s:=DateTimeToStr(oFileItem.DateModify);
+              TDOMElement(FileItemNode).SetAttribute('date_modify',s);
+                if oFileItem.description<>'' then
+                 begin
+                   TempNode:=oXMLDocument.CreateElement('description');
+                   Description:=oXMLDocument.CreateTextNode(oFileItem.description);
+                   TempNode.AppendChild(Description);
+                   FileItemNode.AppendChild(TempNode);
+                   end;
+              for j := 0 to oFileItem.SubFiles.Count - 1 do
+                begin
+                   SubFileNode:=oXMLDocument.CreateElement('subfile');
+                   TDOMElement(SubFileNode).SetAttribute('filename',oFileItem.SubFiles[j].FileName);
+                   TDOMElement(SubFileNode).SetAttribute('filepath',oFileItem.SubFiles[j].UnpPath);
+                   FileItemNode.AppendChild(SubFileNode);
+                end;
+             PackageNode.AppendChild(FileItemNode);
+            end;
+       vRoot.AppendChild(PackageNode);
+     end;
+  WriteXMLFile (oXmlDocument,aFileName);
+  FreeAndNil(oXmlDocument);
+  end;
 
 
 
@@ -351,6 +395,7 @@ begin
 
 end;
    }
+
 
 begin
   ShortDateFormat:='dd.mm.yyyy';
