@@ -5,7 +5,7 @@ unit sm_types;
 interface
 
 uses
-  Classes, SysUtils, Variants;
+  Classes, SysUtils, Variants, sm_utils;
 
 type
 
@@ -81,6 +81,8 @@ type
     function AddItem: TPackageItem;
     
     constructor Create;
+
+    function FindByName(aName: string): TPackageItem;
 
     property Items[Index: Integer]: TPackageItem read GetItems; default;
   end;
@@ -188,6 +190,20 @@ end;
 constructor TPackageList.Create;
 begin
   inherited Create(TPackageItem);
+end;
+
+
+function TPackageList.FindByName(aName: string): TPackageItem;
+var I: Integer;
+begin
+ Result := nil;
+
+  for I := 0 to Count - 1 do
+    if Eq(Items[i].Name, aName) then
+    begin
+      Result := Items[i];
+      Break;
+    end;
 end;
 
 end.

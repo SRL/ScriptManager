@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, Menus,
-  ComCtrls, ExtCtrls, StdCtrls, sm_base, sm_types, sm_web;
+  ComCtrls, ExtCtrls, StdCtrls, sm_srv_base,sm_client_base, sm_types, sm_web;
 
 type
 
@@ -50,7 +50,8 @@ type
 
 var
   Form1: TForm1;
-  Repository,Local: TScriptStorage;
+  Repository: TServerStorage;
+    Local: TClientStorage;
   ManagerPopup: TPopupMenu;
   Index: integer;//current selected category index
 
@@ -62,12 +63,18 @@ implementation
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
-  Repository := TScriptStorage.Create();
+  Repository := TServerStorage.Create();
   Repository.LoadFromXmlFile('E:\Coding\ScriptManager\server.xml');
  // Repository.ToFileItemEx;
  // Repository.SaveLocalXMLRegistry('j:\saved_registry.xml');
-  Local := TScriptStorage.Create();
+  Local := TClientStorage.Create();
   Local.LoadLocalXMLRegistry('E:\Coding\ScriptManager\saved_registry.xml');
+  //Local.CheckStorage(Repository);
+  Local.UpdateLocalXMLRegistry('E:\Coding\ScriptManager\saved_registry.xml');
+ // Local.Free;
+  //Local:=TScriptStorage.Create;
+  //Local.LoadLocalXMLRegistry('E:\Coding\ScriptManager\saved_registry_up.xml');
+ // Local.UpdateLocalXMLRegistry('E:\Coding\ScriptManager\saved_registry_up.xml',Repository);
   //Repository.SaveLocalXMLRegistry('j:\test.xml');
   LoadToTreeView;
 end;
@@ -115,6 +122,7 @@ begin
        1:oFileItem.Installed:=0;
     end;
    Local.Items[index].Files.ItemsEx[ListView1.Selected.Index].Installed:=oFileItem.Installed;
+   Local.UpdateLocalXMLRegistry('E:\Coding\ScriptManager\saved_registry_up.xml');
    LoadPackageToListView(Local.Items[index],index);
   // oFileItem
 
