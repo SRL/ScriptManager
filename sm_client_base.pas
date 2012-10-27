@@ -82,8 +82,6 @@ begin
         EqualScripts(i,server.Files);
      end;
      end;
-
-
 end;
 
 procedure TClientStorage.ConvertFileItem(fItem: TFileItem;
@@ -96,6 +94,7 @@ begin
   fItemEx.FileName:=fItem.FileName;
   fItemEx.DateModify:=fItem.DateModify;
   fItemEx.Installed:=0;
+  fItemEx.Update:=0;
   fItemEx.Description:=fItem.Description;
   fItemEx.EMail:=fItem.EMail;
   fItemEx.Version:=fItem.Version;
@@ -110,12 +109,8 @@ end;
 procedure TClientStorage.EqualScripts(index: integer;aServer: TFileItemList);
 var
   I: Integer;
-  j: Integer;
-  k: Integer;
-  res: integer;
   Local: TFileItemEx;
   Server: TFileItem;
-  sFile: TSubItem;
 begin
   if items[index].Files.Count < aServer.Count then
     begin
@@ -133,7 +128,7 @@ begin
     begin
       for i:= 0 to items[index].Files.Count - 1 do begin
         local:=items[index].Files.ItemsEx[i];
-        server:=TFileItem(FindByName(local.FileName));
+        server:=TFileItem(aServer.FindByName(local.FileName));
         if not assigned(server) then
           begin
           self.Delete(i);
@@ -163,7 +158,7 @@ procedure TClientStorage.LoadLocalXMLRegistry(aFileName: string);
     j: Integer;
     oFileItem: TFileItemEx;
     oNode,oNode1: TDOMNode;
-    s,p: string;
+    s: string;
     sItem: TSubitem;
   begin
     for I := 0 to aParentNode.ChildNodes.Count - 1 do
@@ -178,6 +173,7 @@ procedure TClientStorage.LoadLocalXMLRegistry(aFileName: string);
       oFileItem.EMail   := VarToStr(oNode.Attributes.GetNamedItem('email').NodeValue);
       oFileItem.Version := StrToFloat(VarToStr(oNode.Attributes.GetNamedItem('version').NodeValue));
       oFileItem.Installed:=StrToInt(VarToStr(oNode.Attributes.GetNamedItem('installed').NodeValue));
+      oFileItem.Update:=StrToInt(VarToStr(oNode.Attributes.GetNamedItem('update').NodeValue));
 
       s:=VarToStr(oNode.Attributes.GetNamedItem('date_modify').NodeValue);
 
@@ -192,8 +188,6 @@ procedure TClientStorage.LoadLocalXMLRegistry(aFileName: string);
           sItem:=oFileItem.SubFiles.AddItem;
           sItem.FileName:=oNode1.Attributes.GetNamedItem('filename').NodeValue;
           sItem.UnpPath:=oNode1.Attributes.GetNamedItem('filepath').NodeValue;
-
-         // sItem.Free;
         end else
 
         if LowerCase(oNode1.NodeName)='description' then
@@ -237,7 +231,7 @@ end;
 procedure TClientStorage.UpdateLocalXMLRegistry(aFileName: string);
 var
   oXmlDocument: TXmlDocument;
-  vRoot,ParentNode,PackageNode,TempNode,Description,FileItemNode,SubFileNode: TDOMNode;
+  vRoot,PackageNode,TempNode,Description,FileItemNode,SubFileNode: TDOMNode;
   i,d,j: integer;
   s: string;
   oFileItem: TFileItemEx;
@@ -262,6 +256,8 @@ begin
               TDOMElement(FileItemNode).SetAttribute('email',oFileItem.EMail);
               TDOMElement(FileItemNode).SetAttribute('version',FloatToStr(oFileItem.Version));
               TDOMElement(FileItemNode).SetAttribute('installed',IntToStr(oFileItem.Installed));
+              TDOMElement(FileItemNode).SetAttribute('update',IntToStr(oFileItem.Update));
+
               s:=DateTimeToStr(oFileItem.DateModify);
               TDOMElement(FileItemNode).SetAttribute('date_modify',s);
                 if oFileItem.description<>'' then

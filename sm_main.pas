@@ -66,7 +66,7 @@ begin
   Repository := TServerStorage.Create();
   Repository.LoadFromXmlFile('E:\Coding\ScriptManager\server.xml');
  // Repository.ToFileItemEx;
- // Repository.SaveLocalXMLRegistry('j:\saved_registry.xml');
+ // Repository.SaveLocalXMLRegistry('E:\Coding\ScriptManager\saved_registry.xml');
   Local := TClientStorage.Create();
   Local.LoadLocalXMLRegistry('E:\Coding\ScriptManager\saved_registry.xml');
   Local.CheckStorage(Repository);

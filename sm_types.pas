@@ -49,6 +49,7 @@ type
   TFileItemEx = class(TFileItem)
     public
     Installed: integer;
+    Update: integer;
   end;
 
   { TFileItemList }

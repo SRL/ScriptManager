@@ -157,7 +157,7 @@ object Form1: TForm1
       OnClick = InstallClick
     end
     object MenuItem5: TMenuItem
-      Caption = 'Uninstall'
+      Caption = 'Checking updates'
     end
     object MenuItem6: TMenuItem
       Caption = 'Force update'

@@ -122,6 +122,7 @@ begin
               TDOMElement(FileItemNode).SetAttribute('email',oFileItem.EMail);
               TDOMElement(FileItemNode).SetAttribute('version',FloatToStr(oFileItem.Version));
               TDOMElement(FileItemNode).SetAttribute('installed',IntToStr(0));
+              TDOMElement(FileItemNode).SetAttribute('update',IntToStr(0));
               s:=DateTimeToStr(oFileItem.DateModify);
               TDOMElement(FileItemNode).SetAttribute('date_modify',s);
                 if oFileItem.description<>'' then
