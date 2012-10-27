@@ -23,9 +23,9 @@ type
     procedure UpdateLocalXMLRegistry(aFileName: string);
     function InstallScript(Script: TFileItem):boolean;
     function UninstallScript(Script: TFileItem):boolean;
-    function CheckUpdates(aScript: TServerStorage):TUpdatesList;
+    function CheckUpdates(aScript: TServerStorage):TUpdateList;
     function UpdateScript(Script: TUpdateScript): boolean;
-    function UpdateScripts(Scripts: TUpdatesList): boolean;
+    function UpdateScripts(Scripts: TUpdateList): boolean;
 
   end;
 
@@ -298,7 +298,7 @@ begin
 
 end;
 
-function TClientStorage.CheckUpdates(aScript: TServerStorage): TUpdatesList;
+function TClientStorage.CheckUpdates(aScript: TServerStorage): TUpdateList;
 begin
 
 end;
@@ -308,7 +308,7 @@ begin
 
 end;
 
-function TClientStorage.UpdateScripts(Scripts: TUpdatesList): boolean;
+function TClientStorage.UpdateScripts(Scripts: TUpdateList): boolean;
 begin
 
 end;
