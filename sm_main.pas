@@ -69,7 +69,7 @@ begin
  // Repository.SaveLocalXMLRegistry('j:\saved_registry.xml');
   Local := TClientStorage.Create();
   Local.LoadLocalXMLRegistry('E:\Coding\ScriptManager\saved_registry.xml');
-  //Local.CheckStorage(Repository);
+  Local.CheckStorage(Repository);
   Local.UpdateLocalXMLRegistry('E:\Coding\ScriptManager\saved_registry.xml');
  // Local.Free;
   //Local:=TScriptStorage.Create;
@@ -122,7 +122,7 @@ begin
        1:oFileItem.Installed:=0;
     end;
    Local.Items[index].Files.ItemsEx[ListView1.Selected.Index].Installed:=oFileItem.Installed;
-   Local.UpdateLocalXMLRegistry('E:\Coding\ScriptManager\saved_registry_up.xml');
+   Local.UpdateLocalXMLRegistry('E:\Coding\ScriptManager\saved_registry.xml');
    LoadPackageToListView(Local.Items[index],index);
   // oFileItem
 

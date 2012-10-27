@@ -14,15 +14,13 @@ type
 
   TClientStorage = class(TPackageList)
   //-------------------------------------------------------------------
-//  private
+  private
     procedure ConvertFileItem(fItem: TFileItem;var fItemEx: TFileItemEx);
-    procedure EqualScripts(aServer: TFileItemList);
+    procedure EqualScripts(index: integer;aServer: TFileItemList);
   public
-    //procedure Compare(aConfig: TScriptStorage; aStrings: TStringList);
     procedure CheckStorage(aScript: TServerStorage);
     procedure LoadLocalXMLRegistry(aFileName: string);
     procedure UpdateLocalXMLRegistry(aFileName: string);
- //   procedure LoadTestDataFromDir(aDir: string);
   end;
 
 implementation
@@ -56,6 +54,7 @@ begin
               ConvertFileItem(oFileItem,oFileItemEx);
              end;
           end;
+        EqualScripts(i,server.Files);
       end;
     end;
   //if categories in local storage > server storage
@@ -68,6 +67,7 @@ begin
           begin
           self.Delete(i);
           end;
+        EqualScripts(i,server.Files);
       end;
     end;
   //checking categories names
@@ -79,6 +79,7 @@ begin
         if Assigned(local) then
           if not Eq(local.Name, server.Name) then
             local.Name:=server.Name;
+        EqualScripts(i,server.Files);
      end;
      end;
 
@@ -106,9 +107,53 @@ begin
      end;
 end;
 
-procedure TClientStorage.EqualScripts(aServer: TFileItemList);
+procedure TClientStorage.EqualScripts(index: integer;aServer: TFileItemList);
+var
+  I: Integer;
+  j: Integer;
+  k: Integer;
+  res: integer;
+  Local: TFileItemEx;
+  Server: TFileItem;
+  sFile: TSubItem;
 begin
+  if items[index].Files.Count < aServer.Count then
+    begin
+      for i:= 0 to aServer.Count - 1 do begin
+        server:=aServer.Items[i];
+        local:=TFileItemEx(items[index].Files.FindByName(server.FileName));
+        if not assigned(local) then
+          begin
+          Local:=items[i].Files.AddItemEx;
+          ConvertFileItem(server,local);
+             end;
+          end;
+      end;
+  if items[index].Files.Count > aServer.Count then
+    begin
+      for i:= 0 to items[index].Files.Count - 1 do begin
+        local:=items[index].Files.ItemsEx[i];
+        server:=TFileItem(FindByName(local.FileName));
+        if not assigned(server) then
+          begin
+          self.Delete(i);
+          end;
+      end;
+    end;
+   if items[index].Files.Count = aServer.Count then
+     begin
+     for i:= 0 to aServer.Count-1 do begin
+       server:=aServer.Items[i];
+       local:=items[index].Files.ItemsEx[i];
+        if Assigned(local) then
+          if not Eq(local.FileName, server.FileName) then
+            begin
+            local.FileName:=server.FileName;
+            local.Description:=server.Description;
+     end;
+     end;
 
+     end;
 end;
 
 procedure TClientStorage.LoadLocalXMLRegistry(aFileName: string);

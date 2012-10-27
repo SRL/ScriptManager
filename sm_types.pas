@@ -51,6 +51,8 @@ type
     Installed: integer;
   end;
 
+  { TFileItemList }
+
   TFileItemList = class(TCollection)
   private
     function GetItems(Index: Integer): TFileItem;
@@ -58,7 +60,8 @@ type
   public
     function AddItem: TFileItem;
     function AddItemEx: TFileItemEx;
-
+    function FindByName(aFileName: string): TFileItemEx;overload;
+    function FindByName(aFileName: string): TFileItem;overload;
     constructor Create;
     property ItemsEx[Index: Integer]: TFileItemEx read GetItemsEx;
     property Items[Index: Integer]: TFileItem read GetItems; default;
@@ -147,6 +150,32 @@ end;
 function TFileItemList.AddItemEx: TFileItemEx;
 begin
   Result := TFileItemEx(inherited Add());
+end;
+
+function TFileItemList.FindByName(aFileName: string): TFileItemEx; overload;
+var I: Integer;
+begin
+ Result := nil;
+
+  for I := 0 to Count - 1 do
+    if Eq(ItemsEx[i].FileName, aFileName) then
+    begin
+      Result := ItemsEx[i];
+      Break;
+    end;
+end;
+
+function TFileItemList.FindByName(aFileName: string): TFileItem; overload;
+var I: Integer;
+begin
+ Result := nil;
+
+  for I := 0 to Count - 1 do
+    if Eq(Items[i].FileName, aFileName) then
+    begin
+      Result := Items[i];
+      Break;
+    end;
 end;
 
 function TFileItemList.GetItemsEx(Index: Integer): TFileItemEx;
