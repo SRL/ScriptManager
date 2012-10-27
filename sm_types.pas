@@ -9,6 +9,29 @@ uses
 
 type
 
+  { TUpdateScript }
+
+  TUpdateScript = class(TCollectionItem)
+    Public
+      ScriptName: string;
+      URL: string;
+      constructor Create(Col: TCollection); override;
+      destructor Destroy; override;
+  end;
+
+  { TUpdateList }
+
+  TUpdateList = class(TCollection)
+     private
+    function GetItems(Index: Integer): TUpdateScript;
+  public
+    function AddItem: TUpdateScript;
+
+    constructor Create;
+
+    property Items[Index: Integer]: TUpdateScript read GetItems; default;
+  end;
+
   { TSubItem }
 
   TSubItem = class(TCollectionItem)
@@ -92,6 +115,35 @@ type
   end;
 
 implementation
+
+{ TUpdateList }
+
+function TUpdateList.GetItems(Index: Integer): TUpdateScript;
+begin
+  Result := TUpdateScript(inherited Items[Index]);
+end;
+
+function TUpdateList.AddItem: TUpdateScript;
+begin
+  Result := TUpdateScript(inherited Add());
+end;
+
+constructor TUpdateList.Create;
+begin
+  inherited Create(TUpdateScript);
+end;
+
+{ TUpdateScript }
+
+constructor TUpdateScript.Create(Col: TCollection);
+begin
+  inherited Create(Col);
+end;
+
+destructor TUpdateScript.Destroy;
+begin
+  inherited Destroy;
+end;
 
 constructor TSubItem.Create(Col: TCollection);
 begin

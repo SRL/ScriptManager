@@ -21,6 +21,12 @@ type
     procedure CheckStorage(aScript: TServerStorage);
     procedure LoadLocalXMLRegistry(aFileName: string);
     procedure UpdateLocalXMLRegistry(aFileName: string);
+    function InstallScript(Script: TFileItem):boolean;
+    function UninstallScript(Script: TFileItem):boolean;
+    function CheckUpdates(aScript: TServerStorage):TUpdatesList;
+    function UpdateScript(Script: TUpdateScript): boolean;
+    function UpdateScripts(Scripts: TUpdatesList): boolean;
+
   end;
 
 implementation
@@ -281,6 +287,31 @@ begin
   WriteXMLFile (oXmlDocument,aFileName);
   FreeAndNil(oXmlDocument);
   end;
+
+function TClientStorage.InstallScript(Script: TFileItem): boolean;
+begin
+
+end;
+
+function TClientStorage.UninstallScript(Script: TFileItem): boolean;
+begin
+
+end;
+
+function TClientStorage.CheckUpdates(aScript: TServerStorage): TUpdatesList;
+begin
+
+end;
+
+function TClientStorage.UpdateScript(Script: TUpdateScript): boolean;
+begin
+
+end;
+
+function TClientStorage.UpdateScripts(Scripts: TUpdatesList): boolean;
+begin
+
+end;
 
 
 

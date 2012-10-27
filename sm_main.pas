@@ -188,8 +188,6 @@ var
   I: Integer;
   sItem: TSubItem;
 begin
-//  Exit;
-//  Assert(Assigned(aFileItem));
   ListBox1.Items.Clear;
   Memo1.Lines.Text:='';
 

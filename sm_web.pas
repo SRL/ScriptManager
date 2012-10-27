@@ -29,9 +29,6 @@ TDownloader = Class(TObject)
   public
 
     constructor Create(url: string);
-    function InstallScript(script: TFileItem): boolean;
-    function UpdateScript(script: TFileItem): boolean;
-    function UpdateAllScript(FileList: TFileItemList): boolean;
     destructor Destroy; override;
     end;
 
@@ -157,62 +154,6 @@ begin;
   end;
   Tar.Free;
   Result := Succ;
-end;
-
-function TDownloader.InstallScript(script: TFileItem): boolean;
-var
-  ScriptPackage,UnpackedScript: TMemoryStream;
-begin
-  result:=false;
-  ScriptPackage:=TMemoryStream.Create;
-  UnpackedScript:=TMemoryStream.Create;
-  try
-  MakeUrl(script);
-  Download(ScriptPackage);
-  if ScriptPackage.Size>0 then
-    begin
-     UnpackedScript:=DecompressBZip2(ScriptPackage);
-      if UnpackedScript = nil then exit;
-      if not Untar(UnpackedScript,FPath,FOwerwrite) then exit;
-      result:=true;
-    end;
-  finally
-  UnpackedScript.Free;
-  ScriptPackage.Free;
-  end;
-end;
-
-function TDownloader.UpdateScript(script: TFileItem): boolean;
-var
-  ScriptPackage,UnpackedScript: TMemoryStream;
-begin
-  Result:=false;
-  ScriptPackage:=TMemoryStream.Create;
-  UnpackedScript:=TMemoryStream.Create;
-  try
-  MakeUrl(script);
-  Download(ScriptPackage);
-  if ScriptPackage.Size>0 then
-    begin
-     UnpackedScript:=DecompressBZip2(ScriptPackage);
-      if UnpackedScript = nil then exit;
-      if not Untar(UnpackedScript,FPath,FOwerwrite) then exit;
-      result:=true;
-    end;
-  finally
-  UnpackedScript.Free;
-  ScriptPackage.Free;
-  end;
-end;
-
-function TDownloader.UpdateAllScript(FileList: TFileItemList): boolean;
-var
-  i: integer;
-begin
-  for i:=0 to FileList.Count -1 do
-   begin
-     UpdateScript(FileList.Items[i]);
-   end;
 end;
 
 destructor TDownloader.Destroy;
