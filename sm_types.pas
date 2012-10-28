@@ -13,6 +13,7 @@ type
     XMLSrvDesc: string;//host for server side description file
     XMLStorage: string;//local path for local script storage
     ScriptsPath: string;//catalog with simba scripts
+    Autoupdate: boolean;//autoupdate -> yes\no
 
   end;
    //reserved
