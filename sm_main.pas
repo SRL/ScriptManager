@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, Menus,
-  ComCtrls, ExtCtrls, StdCtrls, sm_srv_base,sm_client_base, sm_types, sm_web;
+  ComCtrls, ExtCtrls, StdCtrls, sm_srv_base,sm_client_base, sm_types,sm_utils, sm_web;
 
 type
 
@@ -64,13 +64,14 @@ implementation
 procedure TForm1.FormCreate(Sender: TObject);
 begin
   Repository := TServerStorage.Create();
-  Repository.LoadFromXmlFile('E:\Coding\ScriptManager\server.xml');
+  Repository.LoadFromXmlFile('server.xml');
  // Repository.ToFileItemEx;
  // Repository.SaveLocalXMLRegistry('E:\Coding\ScriptManager\saved_registry.xml');
   Local := TClientStorage.Create();
-  Local.LoadLocalXMLRegistry('E:\Coding\ScriptManager\saved_registry.xml');
+  Local.LoadLocalXMLRegistry('saved_registry.xml');
   Local.CheckStorage(Repository);
-  Local.UpdateLocalXMLRegistry('E:\Coding\ScriptManager\saved_registry.xml');
+  Local.CheckUpdates(Repository);
+  Local.UpdateLocalXMLRegistry('saved_registry.xml');
  // Local.Free;
   //Local:=TScriptStorage.Create;
   //Local.LoadLocalXMLRegistry('E:\Coding\ScriptManager\saved_registry_up.xml');
@@ -117,12 +118,13 @@ var
    oFileItem: TFileItemEx;
 begin
    oFileItem:=Local.Items[index].Files.ItemsEx[ListView1.Selected.Index];
+   ShowMessage(GetPackageUrl(oFileItem.filename));
    case oFileItem.Installed of
        0:oFileItem.Installed:=1;
        1:oFileItem.Installed:=0;
     end;
    Local.Items[index].Files.ItemsEx[ListView1.Selected.Index].Installed:=oFileItem.Installed;
-   Local.UpdateLocalXMLRegistry('E:\Coding\ScriptManager\saved_registry.xml');
+   Local.UpdateLocalXMLRegistry('saved_registry.xml');
    LoadPackageToListView(Local.Items[index],index);
   // oFileItem
 
@@ -142,16 +144,20 @@ begin
 //    oListItem:= ListView1.AddItem(aPackageItem.Files[i].FileName, aPackageItem.Files[i]);
 
     oListItem.Data:=aPackageItem.Files[i];
-
     oListItem.Caption:=aPackageItem.Files[i].FileName;
     oListItem.SubItems.Add(aPackageItem.Files[i].Author);
     oListItem.SubItems.Add(aPackageItem.Files[i].EMail);
     oListItem.SubItems.Add(DateToStr(aPackageItem.Files[i].DateModify));
-    oListItem.SubItems.Add(FloatToStr(aPackageItem.Files[i].Version));
     oFileItem:=local.items[idx].Files.ItemsEx[i];
     case oFileItem.Installed of
-    0:oListItem.SubItems.Add('Not installed');
-    1:oListItem.SubItems.Add('Installed');
+    0:begin oListItem.SubItems.Add(FloatToStr(aPackageItem.Files[i].Version)); oListItem.SubItems.Add('Not installed'); end;
+    1:begin
+         if oFileItem.update > 0 then
+             oListItem.SubItems.Add(FloatToStr(oFileItem.version)+'<'+FloatToStr(aPackageItem.Files[i].Version))
+             else
+               oListItem.SubItems.Add(FloatToStr(oFileItem.version));
+         oListItem.SubItems.Add('Installed');
+       end;
     end;
     UpdateFileData(TFileItem(oListItem.Data));
     //Items.AddObject(nil, FConfig.Items[i].Name, FConfig.Items[i]);

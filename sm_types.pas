@@ -8,7 +8,14 @@ uses
   Classes, SysUtils, Variants, sm_utils;
 
 type
+  {TOptions}
+  TOptions = record
+    XMLSrvDesc: string;//host for server side description file
+    XMLStorage: string;//local path for local script storage
+    ScriptsPath: string;//catalog with simba scripts
 
+  end;
+   //reserved
   { TUpdateScript }
 
   TUpdateScript = class(TCollectionItem)
@@ -31,6 +38,7 @@ type
 
     property Items[Index: Integer]: TUpdateScript read GetItems; default;
   end;
+  //end of reserved;
 
   { TSubItem }
 
@@ -95,6 +103,7 @@ type
   public
     Name: string;
     Files: TFileItemList;
+    Updates: TUpdateList;
 
     constructor Create(Col: TCollection); override;
     destructor Destroy; override;

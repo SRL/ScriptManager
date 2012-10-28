@@ -19,15 +19,13 @@ TDownloader = Class(TObject)
     FPath: string;//path to simba script folder
     FOwerwrite: boolean;//owerwrite file flag
     //end not useable block
-    procedure Download(var st: TMemoryStream);
-    procedure MakeURL(script: TFileItem);
     //remove that block when we integrate that to Simba
      function DecompressBZip2(const input : TStream; const BlockSize : Cardinal = 4096) : TMemoryStream;
      function UnTar(const Input : TStream) : TStringArray;overload;
      function UnTar(const Input : TStream;const outputdir : string; overwrite : boolean): boolean;overload;
     //
   public
-
+     procedure Download(var st: TMemoryStream);
     constructor Create(url: string);
     destructor Destroy; override;
     end;
@@ -57,7 +55,7 @@ end;
 procedure TDownloader.MakeURL(script: TFileItem);
 begin
 
-  FUrl:=FBaseUrl+script.FileName+'.tar.bz2';
+
 end;
 
 function TDownloader.DecompressBZip2(const input: TStream;

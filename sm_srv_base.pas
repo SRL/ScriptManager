@@ -44,7 +44,8 @@ procedure TServerStorage.LoadFromXmlFile(aFileName: string);
 
       s:=VarToStr(oNode.Attributes.GetNamedItem('date_modify').NodeValue);
 
-      oFileItem.DateModify := StrToDateTime(s);
+      //oFileItem.DateModify := StrToDateTime(s);
+        oFileItem.DateModify := SM_StrToDate(s);
 
       for j := 0 to oNode.ChildNodes.Count - 1 do
       begin

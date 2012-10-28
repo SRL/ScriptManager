@@ -53,10 +53,11 @@
         <ComponentName Value="Form1"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="SM_Main"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="1"/>
-        <CursorPos X="75" Y="9"/>
+        <TopLine Value="127"/>
+        <CursorPos X="70" Y="158"/>
         <UsageCount Value="115"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -219,11 +220,10 @@
         <Filename Value="sm_client_base.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="sm_client_base"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="283"/>
-        <CursorPos X="55" Y="311"/>
+        <TopLine Value="241"/>
+        <CursorPos X="38" Y="307"/>
         <UsageCount Value="26"/>
         <Loaded Value="True"/>
       </Unit21>

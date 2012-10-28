@@ -23,7 +23,7 @@ type
     procedure UpdateLocalXMLRegistry(aFileName: string);
     function InstallScript(Script: TFileItem):boolean;
     function UninstallScript(Script: TFileItem):boolean;
-    function CheckUpdates(aScript: TServerStorage):TUpdateList;
+    procedure CheckUpdates(aScript: TServerStorage);
     function UpdateScript(Script: TUpdateScript): boolean;
     function UpdateScripts(Scripts: TUpdateList): boolean;
 
@@ -183,7 +183,7 @@ procedure TClientStorage.LoadLocalXMLRegistry(aFileName: string);
 
       s:=VarToStr(oNode.Attributes.GetNamedItem('date_modify').NodeValue);
 
-      oFileItem.DateModify := StrToDateTime(s);
+      oFileItem.DateModify := SM_StrToDate(s);
 
       for j := 0 to oNode.ChildNodes.Count - 1 do
       begin
@@ -298,8 +298,29 @@ begin
 
 end;
 
-function TClientStorage.CheckUpdates(aScript: TServerStorage): TUpdateList;
+procedure TClientStorage.CheckUpdates(aScript: TServerStorage);
+var
+  i: integer;
+  k: integer;
+  j: integer;
+  local,server: TPackageItem;
+  oFileItem: TFileItem;
+  oFIleItemEx: TFileItemEx;
 begin
+  for i:=0 to count -1 do
+    begin
+      local:=items[i];
+      server:=aScript.items[i];
+       for k:=0 to local.files.count -1 do
+         begin
+           oFileItem:= server.files[k];
+           oFileItemEx:= local.files.itemsex[k];
+            if (oFileItemEx.version<oFileItem.version) and (oFileItemEx.installed > 0) then
+              begin
+                oFileItemEx.update:=1;
+              end;
+         end;
+    end;
 
 end;
 
