@@ -52,12 +52,6 @@ begin
   end;
 end;
 
-procedure TDownloader.MakeURL(script: TFileItem);
-begin
-
-
-end;
-
 function TDownloader.DecompressBZip2(const input: TStream;
   const BlockSize: Cardinal): TMemoryStream;
 var
