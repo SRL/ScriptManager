@@ -5,9 +5,41 @@ unit sm_types;
 interface
 
 uses
-  Classes, SysUtils, Variants;
+  Classes, SysUtils, Variants, sm_utils;
 
 type
+  {TOptions}
+  TOptions = record
+    XMLSrvDesc: string;//host for server side description file
+    XMLStorage: string;//local path for local script storage
+    ScriptsPath: string;//catalog with simba scripts
+    Autoupdate: boolean;//autoupdate -> yes\no
+
+  end;
+   //reserved
+  { TUpdateScript }
+
+  TUpdateScript = class(TCollectionItem)
+    Public
+      ScriptName: string;
+      URL: string;
+      constructor Create(Col: TCollection); override;
+      destructor Destroy; override;
+  end;
+
+  { TUpdateList }
+
+  TUpdateList = class(TCollection)
+     private
+    function GetItems(Index: Integer): TUpdateScript;
+  public
+    function AddItem: TUpdateScript;
+
+    constructor Create;
+
+    property Items[Index: Integer]: TUpdateScript read GetItems; default;
+  end;
+  //end of reserved;
 
   { TSubItem }
 
@@ -49,7 +81,10 @@ type
   TFileItemEx = class(TFileItem)
     public
     Installed: integer;
+    Update: integer;
   end;
+
+  { TFileItemList }
 
   TFileItemList = class(TCollection)
   private
@@ -58,7 +93,8 @@ type
   public
     function AddItem: TFileItem;
     function AddItemEx: TFileItemEx;
-
+    function FindByName(aFileName: string): TFileItemEx;overload;
+    function FindByName(aFileName: string): TFileItem;overload;
     constructor Create;
     property ItemsEx[Index: Integer]: TFileItemEx read GetItemsEx;
     property Items[Index: Integer]: TFileItem read GetItems; default;
@@ -68,6 +104,7 @@ type
   public
     Name: string;
     Files: TFileItemList;
+    Updates: TUpdateList;
 
     constructor Create(Col: TCollection); override;
     destructor Destroy; override;
@@ -82,10 +119,41 @@ type
     
     constructor Create;
 
+    function FindByName(aName: string): TPackageItem;
+
     property Items[Index: Integer]: TPackageItem read GetItems; default;
   end;
 
 implementation
+
+{ TUpdateList }
+
+function TUpdateList.GetItems(Index: Integer): TUpdateScript;
+begin
+  Result := TUpdateScript(inherited Items[Index]);
+end;
+
+function TUpdateList.AddItem: TUpdateScript;
+begin
+  Result := TUpdateScript(inherited Add());
+end;
+
+constructor TUpdateList.Create;
+begin
+  inherited Create(TUpdateScript);
+end;
+
+{ TUpdateScript }
+
+constructor TUpdateScript.Create(Col: TCollection);
+begin
+  inherited Create(Col);
+end;
+
+destructor TUpdateScript.Destroy;
+begin
+  inherited Destroy;
+end;
 
 constructor TSubItem.Create(Col: TCollection);
 begin
@@ -147,6 +215,32 @@ begin
   Result := TFileItemEx(inherited Add());
 end;
 
+function TFileItemList.FindByName(aFileName: string): TFileItemEx; overload;
+var I: Integer;
+begin
+ Result := nil;
+
+  for I := 0 to Count - 1 do
+    if Eq(ItemsEx[i].FileName, aFileName) then
+    begin
+      Result := ItemsEx[i];
+      Break;
+    end;
+end;
+
+function TFileItemList.FindByName(aFileName: string): TFileItem; overload;
+var I: Integer;
+begin
+ Result := nil;
+
+  for I := 0 to Count - 1 do
+    if Eq(Items[i].FileName, aFileName) then
+    begin
+      Result := Items[i];
+      Break;
+    end;
+end;
+
 function TFileItemList.GetItemsEx(Index: Integer): TFileItemEx;
 begin
   Result := TFileItemEx(inherited Items[Index]);
@@ -188,6 +282,20 @@ end;
 constructor TPackageList.Create;
 begin
   inherited Create(TPackageItem);
+end;
+
+
+function TPackageList.FindByName(aName: string): TPackageItem;
+var I: Integer;
+begin
+ Result := nil;
+
+  for I := 0 to Count - 1 do
+    if Eq(Items[i].Name, aName) then
+    begin
+      Result := Items[i];
+      Break;
+    end;
 end;
 
 end.

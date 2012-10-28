@@ -37,17 +37,15 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="16">
+    <Units Count="24">
       <Unit0>
         <Filename Value="ScriptManager.lpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="ScriptManager"/>
-        <EditorIndex Value="5"/>
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="18"/>
-        <UsageCount Value="60"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="119"/>
       </Unit0>
       <Unit1>
         <Filename Value="sm_main.pas"/>
@@ -57,9 +55,9 @@
         <UnitName Value="SM_Main"/>
         <EditorIndex Value="0"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="64"/>
-        <CursorPos X="41" Y="67"/>
-        <UsageCount Value="60"/>
+        <TopLine Value="25"/>
+        <CursorPos X="53" Y="45"/>
+        <UsageCount Value="119"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit1>
@@ -69,9 +67,9 @@
         <UnitName Value="sm_types"/>
         <EditorIndex Value="2"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="49"/>
-        <CursorPos X="5" Y="25"/>
-        <UsageCount Value="60"/>
+        <TopLine Value="175"/>
+        <CursorPos X="47" Y="16"/>
+        <UsageCount Value="119"/>
         <Loaded Value="True"/>
       </Unit2>
       <Unit3>
@@ -80,24 +78,24 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
-        <UsageCount Value="7"/>
+        <UsageCount Value="1"/>
       </Unit3>
       <Unit4>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\rtl\objpas\classes\classesh.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="444"/>
         <CursorPos X="14" Y="477"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="4"/>
       </Unit4>
       <Unit5>
-        <Filename Value="sm_base.pas"/>
+        <Filename Value="sm_srv_base.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="sm_base"/>
-        <EditorIndex Value="3"/>
+        <UnitName Value="sm_srv_base"/>
+        <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="61"/>
-        <CursorPos X="1" Y="76"/>
-        <UsageCount Value="60"/>
+        <TopLine Value="82"/>
+        <CursorPos X="11" Y="92"/>
+        <UsageCount Value="119"/>
         <Loaded Value="True"/>
       </Unit5>
       <Unit6>
@@ -106,7 +104,7 @@
         <WindowIndex Value="0"/>
         <TopLine Value="32"/>
         <CursorPos X="11" Y="47"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="4"/>
       </Unit6>
       <Unit7>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\packages\fcl-xml\src\dom.pp"/>
@@ -114,54 +112,49 @@
         <WindowIndex Value="0"/>
         <TopLine Value="181"/>
         <CursorPos X="3" Y="196"/>
-        <UsageCount Value="9"/>
+        <UsageCount Value="3"/>
       </Unit7>
       <Unit8>
         <Filename Value="C:\lazarus\fpc\2.6.0\source\rtl\inc\ustringh.inc"/>
-        <EditorIndex Value="6"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="97"/>
+        <TopLine Value="93"/>
         <CursorPos X="10" Y="112"/>
-        <UsageCount Value="29"/>
-        <Loaded Value="True"/>
+        <UsageCount Value="53"/>
       </Unit8>
       <Unit9>
         <Filename Value="C:\lazarus\lcl\include\listitems.inc"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="4"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="138"/>
-        <CursorPos X="1" Y="153"/>
-        <UsageCount Value="10"/>
-        <Loaded Value="True"/>
+        <TopLine Value="110"/>
+        <CursorPos X="1" Y="123"/>
+        <UsageCount Value="34"/>
       </Unit9>
       <Unit10>
         <Filename Value="C:\lazarus\lcl\include\customform.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="65"/>
         <CursorPos X="1" Y="82"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="2"/>
       </Unit10>
       <Unit11>
         <Filename Value="C:\lazarus\lcl\include\application.inc"/>
         <WindowIndex Value="0"/>
         <TopLine Value="2102"/>
         <CursorPos X="1" Y="2117"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="2"/>
       </Unit11>
       <Unit12>
         <Filename Value="C:\lazarus\lcl\include\listitem.inc"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="295"/>
-        <CursorPos X="1" Y="319"/>
-        <UsageCount Value="7"/>
+        <TopLine Value="42"/>
+        <CursorPos X="1" Y="68"/>
+        <UsageCount Value="12"/>
       </Unit12>
       <Unit13>
         <Filename Value="C:\lazarus\lcl\include\treeview.inc"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="3887"/>
-        <CursorPos X="30" Y="3894"/>
-        <UsageCount Value="7"/>
+        <TopLine Value="1856"/>
+        <CursorPos X="1" Y="1884"/>
+        <UsageCount Value="14"/>
       </Unit13>
       <Unit14>
         <Filename Value="sm_web.pas"/>
@@ -169,9 +162,9 @@
         <UnitName Value="sm_web"/>
         <EditorIndex Value="1"/>
         <WindowIndex Value="0"/>
-        <TopLine Value="35"/>
-        <CursorPos X="21" Y="43"/>
-        <UsageCount Value="22"/>
+        <TopLine Value="1"/>
+        <CursorPos X="5" Y="53"/>
+        <UsageCount Value="81"/>
         <Loaded Value="True"/>
       </Unit14>
       <Unit15>
@@ -180,129 +173,203 @@
         <WindowIndex Value="0"/>
         <TopLine Value="1"/>
         <CursorPos X="1" Y="1"/>
-        <UsageCount Value="10"/>
+        <UsageCount Value="4"/>
       </Unit15>
+      <Unit16>
+        <Filename Value="C:\lazarus\lcl\controls.pp"/>
+        <UnitName Value="Controls"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1321"/>
+        <CursorPos X="15" Y="1339"/>
+        <UsageCount Value="36"/>
+      </Unit16>
+      <Unit17>
+        <Filename Value="C:\FPC\2.4.4\fpc-2.4.4\rtl\objpas\sysutils\filutilh.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="69"/>
+        <CursorPos X="10" Y="96"/>
+        <UsageCount Value="35"/>
+      </Unit17>
+      <Unit18>
+        <Filename Value="C:\FPC\2.4.4\fpc-2.4.4\rtl\objpas\classes\classesh.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="421"/>
+        <CursorPos X="3" Y="430"/>
+        <UsageCount Value="31"/>
+      </Unit18>
+      <Unit19>
+        <Filename Value="sm_utils.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="sm_utils"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="24" Y="15"/>
+        <UsageCount Value="38"/>
+      </Unit19>
+      <Unit20>
+        <Filename Value="C:\FPC\2.4.4\fpc-2.4.4\rtl\objpas\sysutils\sysstrh.inc"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="73"/>
+        <CursorPos X="10" Y="91"/>
+        <UsageCount Value="16"/>
+      </Unit20>
+      <Unit21>
+        <Filename Value="sm_client_base.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="sm_client_base"/>
+        <EditorIndex Value="6"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="190"/>
+        <CursorPos X="38" Y="307"/>
+        <UsageCount Value="30"/>
+        <Loaded Value="True"/>
+      </Unit21>
+      <Unit22>
+        <Filename Value="C:\FPC\2.4.4\fpc-2.4.4\packages\fcl-xml\src\xmlread.pp"/>
+        <UnitName Value="XMLRead"/>
+        <EditorIndex Value="5"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="26"/>
+        <CursorPos X="11" Y="44"/>
+        <UsageCount Value="12"/>
+        <Loaded Value="True"/>
+      </Unit22>
+      <Unit23>
+        <Filename Value="settingsform.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="sForm"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="SettingsForm"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="3"/>
+        <WindowIndex Value="0"/>
+        <TopLine Value="1"/>
+        <CursorPos X="1" Y="1"/>
+        <UsageCount Value="23"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit23>
     </Units>
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="sm_types.pas"/>
-        <Caret Line="3" Column="1" TopLine="1"/>
+        <Caret Line="67" Column="29" TopLine="49"/>
       </Position1>
       <Position2>
-        <Filename Value="sm_types.pas"/>
-        <Caret Line="118" Column="23" TopLine="103"/>
+        <Filename Value="sm_main.pas"/>
+        <Caret Line="71" Column="3" TopLine="56"/>
       </Position2>
       <Position3>
-        <Filename Value="sm_main.pas"/>
-        <Caret Line="52" Column="1" TopLine="45"/>
+        <Filename Value="sm_srv_base.pas"/>
+        <Caret Line="15" Column="10" TopLine="1"/>
       </Position3>
       <Position4>
-        <Filename Value="sm_base.pas"/>
-        <Caret Line="76" Column="1" TopLine="61"/>
+        <Filename Value="sm_main.pas"/>
+        <Caret Line="71" Column="5" TopLine="52"/>
       </Position4>
       <Position5>
-        <Filename Value="sm_main.pas"/>
-        <Caret Line="120" Column="1" TopLine="95"/>
+        <Filename Value="sm_client_base.pas"/>
+        <Caret Line="32" Column="25" TopLine="4"/>
       </Position5>
       <Position6>
-        <Filename Value="sm_types.pas"/>
-        <Caret Line="116" Column="1" TopLine="103"/>
+        <Filename Value="sm_client_base.pas"/>
+        <Caret Line="2" Column="1" TopLine="1"/>
       </Position6>
       <Position7>
         <Filename Value="sm_main.pas"/>
-        <Caret Line="110" Column="37" TopLine="93"/>
+        <Caret Line="9" Column="60" TopLine="1"/>
       </Position7>
       <Position8>
-        <Filename Value="sm_main.pas"/>
-        <Caret Line="111" Column="37" TopLine="94"/>
+        <Filename Value="sm_types.pas"/>
+        <Caret Line="63" Column="52" TopLine="49"/>
       </Position8>
       <Position9>
-        <Filename Value="sm_main.pas"/>
-        <Caret Line="112" Column="37" TopLine="95"/>
+        <Filename Value="sm_types.pas"/>
+        <Caret Line="64" Column="14" TopLine="46"/>
       </Position9>
       <Position10>
-        <Filename Value="sm_main.pas"/>
-        <Caret Line="113" Column="37" TopLine="96"/>
+        <Filename Value="sm_types.pas"/>
+        <Caret Line="168" Column="71" TopLine="144"/>
       </Position10>
       <Position11>
-        <Filename Value="sm_main.pas"/>
-        <Caret Line="114" Column="37" TopLine="97"/>
+        <Filename Value="sm_client_base.pas"/>
+        <Caret Line="134" Column="41" TopLine="105"/>
       </Position11>
       <Position12>
-        <Filename Value="sm_web.pas"/>
-        <Caret Line="8" Column="25" TopLine="1"/>
+        <Filename Value="sm_client_base.pas"/>
+        <Caret Line="119" Column="27" TopLine="113"/>
       </Position12>
       <Position13>
-        <Filename Value="sm_web.pas"/>
-        <Caret Line="14" Column="51" TopLine="1"/>
+        <Filename Value="sm_client_base.pas"/>
+        <Caret Line="150" Column="50" TopLine="119"/>
       </Position13>
       <Position14>
-        <Filename Value="sm_web.pas"/>
-        <Caret Line="21" Column="9" TopLine="1"/>
+        <Filename Value="sm_client_base.pas"/>
+        <Caret Line="132" Column="33" TopLine="114"/>
       </Position14>
       <Position15>
-        <Filename Value="sm_web.pas"/>
-        <Caret Line="23" Column="58" TopLine="13"/>
+        <Filename Value="sm_client_base.pas"/>
+        <Caret Line="142" Column="9" TopLine="120"/>
       </Position15>
       <Position16>
-        <Filename Value="sm_web.pas"/>
-        <Caret Line="51" Column="3" TopLine="46"/>
+        <Filename Value="sm_client_base.pas"/>
+        <Caret Line="145" Column="32" TopLine="120"/>
       </Position16>
       <Position17>
-        <Filename Value="sm_web.pas"/>
-        <Caret Line="18" Column="35" TopLine="3"/>
+        <Filename Value="sm_client_base.pas"/>
+        <Caret Line="112" Column="14" TopLine="99"/>
       </Position17>
       <Position18>
-        <Filename Value="sm_web.pas"/>
-        <Caret Line="31" Column="32" TopLine="30"/>
+        <Filename Value="sm_client_base.pas"/>
+        <Caret Line="162" Column="6" TopLine="150"/>
       </Position18>
       <Position19>
-        <Filename Value="sm_web.pas"/>
-        <Caret Line="21" Column="26" TopLine="18"/>
+        <Filename Value="sm_client_base.pas"/>
+        <Caret Line="236" Column="9" TopLine="230"/>
       </Position19>
       <Position20>
-        <Filename Value="sm_web.pas"/>
-        <Caret Line="49" Column="43" TopLine="34"/>
+        <Filename Value="sm_main.pas"/>
+        <Caret Line="69" Column="2" TopLine="44"/>
       </Position20>
       <Position21>
-        <Filename Value="sm_web.pas"/>
-        <Caret Line="33" Column="19" TopLine="9"/>
+        <Filename Value="sm_main.pas"/>
+        <Caret Line="197" Column="4" TopLine="6"/>
       </Position21>
       <Position22>
         <Filename Value="sm_main.pas"/>
-        <Caret Line="39" Column="52" TopLine="29"/>
+        <Caret Line="39" Column="7" TopLine="21"/>
       </Position22>
       <Position23>
-        <Filename Value="sm_main.pas"/>
-        <Caret Line="105" Column="2" TopLine="74"/>
+        <Filename Value="sm_types.pas"/>
+        <Caret Line="19" Column="7" TopLine="1"/>
       </Position23>
       <Position24>
-        <Filename Value="sm_main.pas"/>
-        <Caret Line="58" Column="1" TopLine="43"/>
+        <Filename Value="sm_types.pas"/>
+        <Caret Line="32" Column="50" TopLine="1"/>
       </Position24>
       <Position25>
-        <Filename Value="sm_base.pas"/>
-        <Caret Line="76" Column="1" TopLine="61"/>
+        <Filename Value="sm_types.pas"/>
+        <Caret Line="133" Column="33" TopLine="115"/>
       </Position25>
       <Position26>
-        <Filename Value="sm_main.pas"/>
-        <Caret Line="114" Column="20" TopLine="90"/>
+        <Filename Value="sm_client_base.pas"/>
+        <Caret Line="28" Column="60" TopLine="1"/>
       </Position26>
       <Position27>
-        <Filename Value="sm_main.pas"/>
-        <Caret Line="67" Column="41" TopLine="64"/>
+        <Filename Value="sm_client_base.pas"/>
+        <Caret Line="291" Column="56" TopLine="282"/>
       </Position27>
       <Position28>
-        <Filename Value="sm_base.pas"/>
-        <Caret Line="76" Column="1" TopLine="61"/>
+        <Filename Value="sm_client_base.pas"/>
+        <Caret Line="28" Column="44" TopLine="8"/>
       </Position28>
       <Position29>
-        <Filename Value="C:\lazarus\lcl\include\listitems.inc"/>
-        <Caret Line="153" Column="1" TopLine="138"/>
+        <Filename Value="sm_srv_base.pas"/>
+        <Caret Line="92" Column="11" TopLine="82"/>
       </Position29>
       <Position30>
-        <Filename Value="sm_base.pas"/>
-        <Caret Line="76" Column="1" TopLine="61"/>
+        <Filename Value="settingsform.pas"/>
+        <Caret Line="1" Column="1" TopLine="1"/>
       </Position30>
     </JumpHistory>
   </ProjectOptions>
@@ -328,12 +395,6 @@
     </Other>
   </CompilerOptions>
   <Debugging>
-    <BreakPoints Count="1">
-      <Item1>
-        <Source Value="sm_base.pas"/>
-        <Line Value="47"/>
-      </Item1>
-    </BreakPoints>
     <Exceptions Count="3">
       <Item1>
         <Name Value="EAbort"/>
