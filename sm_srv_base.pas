@@ -14,13 +14,13 @@ type
 
   TServerStorage = class(TPackageList)
   public
-    procedure LoadFromXmlFile(aFileName: string);
+    procedure LoadFromXmlStream(aFileName: TStream);
     procedure SaveLocalXMLRegistry(aFileName: string);
   end;
 
 implementation
 //-------------------------------------------------------------------
-procedure TServerStorage.LoadFromXmlFile(aFileName: string);
+procedure TServerStorage.LoadFromXmlStream(aFileName: TStream);
 //-------------------------------------------------------------------
 
   procedure DoLoadFiles(aParentNode: TDOMNode; aPackageItem: TPackageItem);
@@ -89,6 +89,7 @@ procedure TServerStorage.LoadFromXmlFile(aFileName: string);
 var
   oXmlDocument: TXmlDocument;
 begin
+  oXMLDocument:=TXMLDocument.Create;
   ReadXMLFile(oXmlDocument,aFileName);
 
   DoLoadPackages (oXmlDocument.DocumentElement);

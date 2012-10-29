@@ -22,7 +22,31 @@ object Form1: TForm1
     Height = 23
     Top = 590
     Width = 914
-    Panels = <>
+    Panels = <    
+      item
+        Text = 'Categories:'
+        Width = 100
+      end    
+      item
+        Text = 'Scripts count:'
+        Width = 100
+      end    
+      item
+        Text = 'Installed:'
+        Width = 80
+      end    
+      item
+        Text = 'Updates available:'
+        Width = 120
+      end    
+      item
+        Text = 'Status:'
+        Width = 200
+      end    
+      item
+        Width = 50
+      end>
+    SimplePanel = False
   end
   object SMPanel: TPanel
     Left = 0

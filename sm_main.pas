@@ -39,6 +39,8 @@ type
       Shift: TShiftState; X, Y: Integer);
     procedure TreeView1Click(Sender: TObject);
     procedure InstallClick(Sender: TObject);
+    function GetScript(Script: TFileItem): boolean;
+    function RemoveScript(Script: TFileItemEx): boolean;
   private
     procedure LoadPackageToListView(aPackageItem: TPackageItem;idx: integer);
     procedure LoadToTreeView;
@@ -52,19 +54,26 @@ var
   Form1: TForm1;
   Repository: TServerStorage;
     Local: TClientStorage;
+    Loader: TDownloader;
   ManagerPopup: TPopupMenu;
   Index: integer;//current selected category index
 
 implementation
-
+uses libtar;//for scripts unpacking
 {$R *.lfm}
 
 { TForm1 }
 
 procedure TForm1.FormCreate(Sender: TObject);
+var
+  XML: TFileStream;
 begin
+  XML:=TFileStream.Create('server.xml',fmCreate);
+  Loader:=Tdownloader.Create('http://localhost/server.xml');
+  loader.Download(XML);
+  XML.Position:=0;
   Repository := TServerStorage.Create();
-  Repository.LoadFromXmlFile('server.xml');
+  Repository.LoadFromXmlStream(XML);
  // Repository.ToFileItemEx;
  // Repository.SaveLocalXMLRegistry('E:\Coding\ScriptManager\saved_registry.xml');
   Local := TClientStorage.Create();
@@ -100,6 +109,8 @@ begin
        0:ManagerPopup.Items[0].Caption:='Install';
        1:ManagerPopup.Items[0].Caption:='Uninstall';
     end;
+     if oFileItem.Update> 0 then
+      ManagerPopup.Items[0].Caption:='Update';
      ManagerPopup.PopUp;
    end;
 end;
@@ -116,17 +127,111 @@ end;
 procedure TForm1.InstallClick(Sender: TObject);
 var
    oFileItem: TFileItemEx;
+   rep: TFileItem;
+   sItem: TSubItem;
+   i: integer;
 begin
    oFileItem:=Local.Items[index].Files.ItemsEx[ListView1.Selected.Index];
-   ShowMessage(GetPackageUrl(oFileItem.filename));
+   rep:=Repository.Items[index].Files.Items[ListView1.Selected.Index];
+   //ShowMessage(GetPackageUrl(oFileItem.filename));  //just function testing
    case oFileItem.Installed of
        0:oFileItem.Installed:=1;
        1:oFileItem.Installed:=0;
     end;
+   oFileItem.Version:=rep.Version;
+   oFileItem.DateModify:=rep.DateModify;
+
+   if rep.SubFiles.Count > 0 then
+    begin
+    oFileItem.SubFiles.Clear;
+     for i:=0 to rep.SubFiles.Count-1 do
+      begin
+        sItem:=oFileItem.SubFiles.AddItem;
+        sItem.FileName:=rep.SubFiles[i].FileName;
+        sItem.UnpPath:=rep.SubFiles[i].UnpPath;
+      end;
+    end else
+    begin
+     oFileItem.SubFiles.Clear;
+    end;
+   oFileItem.Author:=rep.Author;
+   oFileItem.EMail:=rep.EMail;
+   getScript(rep);
    Local.Items[index].Files.ItemsEx[ListView1.Selected.Index].Installed:=oFileItem.Installed;
    Local.UpdateLocalXMLRegistry('saved_registry.xml');
    LoadPackageToListView(Local.Items[index],index);
   // oFileItem
+
+end;
+
+function TForm1.GetScript(Script: TFileItem): boolean;
+var
+ Downloader: TDownloader;
+ ScriptPack: TMemoryStream;
+   ScriptTar: TMemoryStream;
+ unppath:string;//just test variable
+ TA: TTarArchive;
+ DirRec : TTarDirRec;
+ FS : TFileStream;
+ i: integer;
+begin
+ result:=false;
+ scriptPack:=TMemoryStream.Create;
+ //scriptTar:=TMemoryStream.Create;
+ Downloader:=TDownloader.Create('http://localhost/'+GetPackageUrl(Script.filename));
+ try
+ Downloader.Download(scriptPack);
+ scriptPack.Position:=0;
+// scriptPack.Seek(0,0);
+ i:=scriptPack.Size;
+ scriptTar:=TMemoryStream.Create;
+ Downloader.DecompressBZip2(scriptPack,scriptTar);
+  if scriptTar.Size > 0 then
+    begin
+     i:=0;
+     scriptTar.Position:=0;
+     TA:=TTarArchive.Create(scriptTar);
+     TA.Reset;
+     while TA.FindNext(DirRec) do
+       begin
+          if (DirRec.FileType = ftDirectory) then
+            begin;
+             if not DirectoryExists(unppath + DirRec.Name) and not CreateDir(unppath + DirRec.Name) then
+            begin
+           // Succ := false;
+            break;
+        end;
+     end;
+     if eq(DirRec.Name, GetScriptName(script.FileName)) then
+            begin
+             FS := TFileStream.Create(UTF8ToSys('C:/' +dirrec.name),fmCreate);
+              TA.ReadFile(fs);
+             FS.Free;
+             result:=true;
+            end;
+     if script.SubFiles.Count>0 then
+        begin
+         if eq(DirRec.Name, script.SubFiles[i].FileName) then
+           begin
+             FS := TFileStream.Create(UTF8ToSys('J:/' +dirrec.name),fmCreate);
+              TA.ReadFile(fs);
+             FS.Free;
+             result:=true;
+           end;
+        end;
+        inc(i);
+       end;
+    end;
+ finally
+   downloader.Free;
+   scriptPack.Free;
+   scriptTar.Free;
+ end;
+
+end;
+
+function TForm1.RemoveScript(Script: TFileItemEx): boolean;
+begin
 
 end;
 

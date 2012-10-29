@@ -46,7 +46,7 @@ begin
     end;
   end;
   SetLength(Result, k);
-  result:=result+'.tar.bz2';
+  result:=lowercase(result+'.tar.bz2');
 end;
 
 function GetScriptName(s: string): string;
@@ -66,7 +66,7 @@ begin
     end;
   end;
   SetLength(Result, k);
-  result:=result+'.simba';
+  result:=lowercase(result+'.simba');
 end;
 end.
 

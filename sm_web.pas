@@ -5,7 +5,7 @@ unit sm_web;
 interface
 
 uses
-  Classes, SysUtils,HttpSend,sm_types,FileUtil,{remove it when we integrate that to simba}bzip2, bzip2comn,bzip2stream, libtar{mmisc};
+  Classes, SysUtils,HttpSend,sm_types,FileUtil,{remove it when we integrate that to simba}bzip2, bzip2comn,bzip2stream,libtar{mmisc};
 
 Type
 
@@ -14,18 +14,18 @@ TStringArray = array of string;
 TDownloader = Class(TObject)
   private
     FUrl: string;
-    FBaseUrl: string;
     //this is not useable variables
     FPath: string;//path to simba script folder
     FOwerwrite: boolean;//owerwrite file flag
     //end not useable block
-    //remove that block when we integrate that to Simba
-     function DecompressBZip2(const input : TStream; const BlockSize : Cardinal = 4096) : TMemoryStream;
-     function UnTar(const Input : TStream) : TStringArray;overload;
-     function UnTar(const Input : TStream;const outputdir : string; overwrite : boolean): boolean;overload;
-    //
   public
-     procedure Download(var st: TMemoryStream);
+     procedure Download(var st: TFileStream);overload;
+     procedure Download(var st: TMemoryStream);overload;
+     procedure Download(var st: TStringStream);overload;
+     function GetPage(URL: String): String;
+     //remove that block when we integrate that to Simba
+     procedure DecompressBZip2(const input : TStream;var res: TMemoryStream; const BlockSize : Cardinal = 4096);
+    //
     constructor Create(url: string);
     destructor Destroy; override;
     end;
@@ -37,10 +37,30 @@ implementation
 constructor TDownloader.Create(url: string);
 begin
   inherited Create;
-  FbaseURl:=url;
+  FURl:=url;
 end;
 
-procedure TDownloader.Download(var st: TMemoryStream);
+function TDownloader.GetPage(URL: String): String;
+var
+  HTTP : THTTPSend;
+begin;
+  HTTP := THTTPSend.Create;
+
+  HTTP.UserAgent := 'Mozilla 4.0/ (compatible Synapse)';
+
+  Result := '';
+  try
+    if HTTP.HTTPMethod('GET', URL) then
+    begin
+      SetLength(result,HTTP.Document.Size);
+      HTTP.Document.Read(result[1],length(result));
+    end;
+  finally
+    HTTP.Free;
+  end;
+end;
+
+procedure TDownloader.Download(var st: TFileStream); overload;
 var
   http: THttpSend;
 begin
@@ -52,40 +72,56 @@ begin
   end;
 end;
 
-function TDownloader.DecompressBZip2(const input: TStream;
-  const BlockSize: Cardinal): TMemoryStream;
+procedure TDownloader.Download(var st: TMemoryStream); overload;
 var
-  Unzipper : TDecompressBzip2Stream;
-  Blocks : array of Byte;
-  ReadSize : cardinal;
+  http: THttpSend;
 begin
-  SetLength(Blocks,BlockSize);
+  http:=THttpSend.Create;
   try
-    Unzipper := TDecompressBzip2Stream.Create(input);
-  except
-    on e : exception do
-    begin;
-     // mDebugLn(e.message);
-      exit;
-    end;
+    HttpGetBinary(FUrl,st);
+  finally
+  http.Free;
   end;
-  Result := TMemoryStream.Create;
+end;
+procedure TDownloader.Download(var st: TStringStream); overload;
+var
+  http: THttpSend;
+  s: String;
+begin
+  http:=THttpSend.Create;
   try
-    repeat
-      ReadSize := BlockSize;
-      ReadSize := Unzipper.read(blocks[0],readsize);  //Read ReadSize amount of bytes.
-      Result.Write(Blocks[0],ReadSize);
-    until readsize = 0;
-  except
-    on e : EBzip2 do
-     if E.ErrCode <> bzip2_endoffile then
-       raise Exception.CreateFmt('Decompression error: %s %d',[e.message,e.errcode]);
+    s:=GetPage(FUrl);
+    st:=TStringStream.Create(s);
+  finally
+  http.Free;
   end;
-  Unzipper.Free;
 end;
 
+procedure TDownloader.DecompressBZip2(const input: TStream; var res: TMemoryStream;
+  const BlockSize: Cardinal);
+var
+  Unzipper : Tbzip2_decode_stream;
+  a : array of Byte;
+  ReadSize : cardinal;
+  i,j: integer;
+begin
+  SetLength(a,BlockSize);
+  try
+    Unzipper.init(@input);
+    repeat
+            readsize:=4096;
+            Unzipper.read(a[0],readsize);
+            dec(readsize,Unzipper.short);
+           res.write(a[0],readsize);
+    until Unzipper.status<>0;
+            Unzipper.done;
+  finally
+  end;
+  end;
 
 
+
+{
 function TDownloader.UnTar(const Input: TStream): TStringArray;
 var
   Tar : TTarArchive;
@@ -146,7 +182,7 @@ begin;
   end;
   Tar.Free;
   Result := Succ;
-end;
+end; }
 
 destructor TDownloader.Destroy;
 begin
