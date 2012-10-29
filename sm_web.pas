@@ -26,6 +26,7 @@ TDownloader = Class(TObject)
      //remove that block when we integrate that to Simba
      procedure DecompressBZip2(const input : TStream;var res: TMemoryStream; const BlockSize : Cardinal = 4096);
     //
+    function Decompress(const SourceFile: TStringStream;TargetFile: string): boolean;
     constructor Create(url: string);
     destructor Destroy; override;
     end;
@@ -100,89 +101,62 @@ end;
 procedure TDownloader.DecompressBZip2(const input: TStream; var res: TMemoryStream;
   const BlockSize: Cardinal);
 var
-  Unzipper : Tbzip2_decode_stream;
-  a : array of Byte;
+  Unzipper : TDecompressBzip2Stream;
+  Blocks : array [0..4096] of Byte;
   ReadSize : cardinal;
   i,j: integer;
 begin
-  SetLength(a,BlockSize);
+ // SetLength(Blocks,BlockSize);
   try
-    Unzipper.init(@input);
-    repeat
-            readsize:=4096;
-            Unzipper.read(a[0],readsize);
-            dec(readsize,Unzipper.short);
-           res.write(a[0],readsize);
-    until Unzipper.status<>0;
-            Unzipper.done;
-  finally
-  end;
-  end;
-
-
-
-{
-function TDownloader.UnTar(const Input: TStream): TStringArray;
-var
-  Tar : TTarArchive;
-  DirRec : TTarDirRec;
-  Len : integer;
-begin;
-  Tar := TTarArchive.Create(input);
-  Tar.reset;
-  Len := 0;
-  while Tar.FindNext(DirRec) do
-  begin
-    inc(len);
-    SetLength(result,len*2);
-    result[len*2-2] := DirRec.Name;
-    result[len*2-1] := Tar.ReadFile;
-  end;
-  Tar.Free;
-end;
-
-function TDownloader.UnTar(const Input: TStream; const outputdir: string;
-  overwrite: boolean): boolean;
-var
-  Tar : TTarArchive;
-  Succ : boolean;
-  DirRec : TTarDirRec;
-  FS : TFileStream;
-begin;
-  result := false;
-  if not DirectoryExists(outputdir) then
-    if not CreateDir(outputdir) then
+    Unzipper := TDecompressBzip2Stream.Create(input);
+  except
+    on e : exception do
+    begin;
+  //    mDebugLn(e.message);
       exit;
-  Tar := TTarArchive.Create(input);
-  Tar.reset;
-  Succ := True;
-  while Tar.FindNext(DirRec) do
-  begin
-    if (DirRec.FileType = ftDirectory) then
-    begin;
-      if not DirectoryExists(outputdir + DirRec.Name) and not CreateDir(outputdir + DirRec.Name) then
-      begin
-        Succ := false;
-        break;
-      end;
-    end else if (DirRec.FileType = ftNormal) then
-    begin;
-      if FileExistsUTF8(outputdir + dirrec.name) and not overwrite then
-        continue;
-      try
-        FS := TFileStream.Create(UTF8ToSys(outputdir +dirrec.name),fmCreate);
-        tar.ReadFile(fs);
-        FS.Free;
-      except
-        Succ := false;
-        break;
-      end;
-    end else
-   //   mDebugLn(format('Unknown filetype in archive. %s',[dirrec.name]));
+    end;
   end;
-  Tar.Free;
-  Result := Succ;
-end; }
+  try
+    repeat
+      ReadSize := BlockSize;
+      ReadSize := Unzipper.Read(blocks[0],readsize);  //Read ReadSize amount of bytes.
+      Res.Write(Blocks[0],ReadSize);
+    until readsize = 0;
+  except
+    on e : EBzip2 do
+     if E.ErrCode <> bzip2_endoffile then
+       raise Exception.CreateFmt('Decompression error: %s %d',[e.message,e.errcode]);
+  end;
+  Unzipper.Free;
+end;
+function TDownloader.Decompress(const SourceFile: TStringStream;TargetFile: string): boolean;
+var
+  Decompressed:TDecompressBzip2Stream;
+  OutFile:TFileStream;
+  Buffer: Pointer;
+  i:integer;
+const buffersize=$2000;
+begin
+  result:=false;
+  try
+    Decompressed:=TDecompressBzip2Stream.Create(SourceFile);
+    OutFile:=TFileStream.Create(TargetFile, fmCreate);
+    try
+      GetMem(Buffer,BufferSize);
+      repeat
+        i:=Decompressed.Read(buffer^,BufferSize);
+        if i>0 then
+          OutFile.WriteBuffer(buffer^,i);
+      until i<BufferSize;
+      result:=true;
+    finally
+      Decompressed.Free;
+      OutFile.Free;
+    end;
+  finally
+
+  end;
+end;
 
 destructor TDownloader.Destroy;
 begin

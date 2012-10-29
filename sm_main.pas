@@ -66,9 +66,10 @@ uses libtar;//for scripts unpacking
 
 procedure TForm1.FormCreate(Sender: TObject);
 var
-  XML: TFileStream;
+  XML: TMemoryStream;
 begin
-  XML:=TFileStream.Create('server.xml',fmCreate);
+  //XML:=TFileStream.Create('server.xml',fmCreate);
+ XML:=TMemoryStream.Create;
   Loader:=Tdownloader.Create('http://localhost/server.xml');
   loader.Download(XML);
   XML.Position:=0;
@@ -167,20 +168,21 @@ end;
 function TForm1.GetScript(Script: TFileItem): boolean;
 var
  Downloader: TDownloader;
- ScriptPack: TMemoryStream;
+ ScriptPack: TStringStream;
    ScriptTar: TMemoryStream;
- unppath:string;//just test variable
+ unppath,s:string;//just test variable
  TA: TTarArchive;
  DirRec : TTarDirRec;
  FS : TFileStream;
  i: integer;
 begin
  result:=false;
- scriptPack:=TMemoryStream.Create;
- //scriptTar:=TMemoryStream.Create;
+ //scriptPack:=TFileStream.Create(GetPackageUrl(script.FileName),fmCreate);
+ //scriptPack:=TMemoryStream.Create;
  Downloader:=TDownloader.Create('http://localhost/'+GetPackageUrl(Script.filename));
  try
- Downloader.Download(scriptPack);
+ s:=Downloader.GetPage('http://localhost/'+GetPackageUrl(Script.filename));
+ scriptPack:=TStringStream.Create(s);
  scriptPack.Position:=0;
 // scriptPack.Seek(0,0);
  i:=scriptPack.Size;
