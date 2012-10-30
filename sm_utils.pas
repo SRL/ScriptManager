@@ -11,6 +11,9 @@ function Eq(aValue1, aValue2: string): boolean;
 function SM_StrToDate(str: string): TDateTime;
 function GetPackageUrl(s: string):string;
 function GetScriptName(s: string):string;
+//function convert path like {$SIMBA_SPS}/RUNESCAPE_OTHER
+//to X:/Simba/Include/SPS/Img/RUNESCAPE_OTHER/
+function ConvertPath(s: string): string;
 implementation
 function Eq(aValue1, aValue2: string): boolean;
 //--------------------------------------------------------
@@ -68,5 +71,14 @@ begin
   SetLength(Result, k);
   result:=lowercase(result+'.simba');
 end;
+
+function ConvertPath(s: string): string;
+var
+  res: string;
+begin
+
+
+end;
+
 end.
 
