@@ -104,12 +104,12 @@ begin
   fItemEx.Description:=fItem.Description;
   fItemEx.EMail:=fItem.EMail;
   fItemEx.Version:=fItem.Version;
-   for i:=0 to fItem.SubFiles.Count-1 do
+  { for i:=0 to fItem.SubFiles.Count-1 do
      begin
        sFile:=fItemEx.SubFiles.AddItem;
        sFile.FileName:=fItem.SubFiles[i].FileName;
        sFile.UnpPath:=fItem.SubFiles[i].UnpPath;
-     end;
+     end; }
 end;
 
 procedure TClientStorage.EqualScripts(index: integer;aServer: TFileItemList);

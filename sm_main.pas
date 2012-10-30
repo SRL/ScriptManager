@@ -76,7 +76,7 @@ begin
   Repository := TServerStorage.Create();
   Repository.LoadFromXmlStream(XML);
  // Repository.ToFileItemEx;
-  Repository.SaveLocalXMLRegistry('saved_registry.xml');
+ // Repository.SaveLocalXMLRegistry('saved_registry.xml');
   Local := TClientStorage.Create();
   Local.LoadLocalXMLRegistry('saved_registry.xml');
   Local.CheckStorage(Repository);
@@ -127,20 +127,21 @@ end;
 
 procedure TForm1.InstallClick(Sender: TObject);
 var
-   oFileItem: TFileItemEx;
+  loc: TFileItemEx;
    rep: TFileItem;
    sItem: TSubItem;
    i: integer;
 begin
-   oFileItem:=Local.Items[index].Files.ItemsEx[ListView1.Selected.Index];
    rep:=Repository.Items[index].Files.Items[ListView1.Selected.Index];
+   loc:= Local.Items[index].Files.ItemsEx[ListView1.Selected.Index];
+   getScript(rep);
    //ShowMessage(GetPackageUrl(oFileItem.filename));  //just function testing
-   case oFileItem.Installed of
-       0:oFileItem.Installed:=1;
-       1:oFileItem.Installed:=0;
+   case  loc.Installed of
+       0: loc.Installed:=1;
+       1: loc.Installed:=0;
     end;
-   oFileItem.Version:=rep.Version;
-   oFileItem.DateModify:=rep.DateModify;
+    loc.Version:=rep.Version;
+    loc.DateModify:=rep.DateModify;
  {
    if rep.SubFiles.Count > 0 then
     begin
@@ -161,10 +162,10 @@ begin
         sItem.UnpPath:=rep.SubFiles[i].UnpPath;
       end;
     end;  }
-   oFileItem.Author:=rep.Author;
-   oFileItem.EMail:=rep.EMail;
-   getScript(rep);
-   //Local.Items[index].Files.ItemsEx[ListView1.Selected.Index].Installed:=oFileItem.Installed;
+    loc.Author:=rep.Author;
+    loc.EMail:=rep.EMail;
+    loc.FileName:=rep.FileName;
+ // .Assign(oFileItem);
    Local.UpdateLocalXMLRegistry('saved_registry.xml');
    LoadPackageToListView(Repository.Items[index],index);
   // oFileItem
@@ -174,7 +175,6 @@ end;
 function TForm1.GetScript(Script: TFileItem): boolean;
 var
  Downloader: TDownloader;
- ScriptPack: TMemoryStream;
  ScriptTar: TMemoryStream;
  unppath,s:string;//just test variable
  TA: TTarArchive;
@@ -226,7 +226,6 @@ begin
        end;
  finally
    downloader.Free;
-   scriptPack.Free;
    scriptTar.Free;
  end;
 
@@ -266,7 +265,7 @@ begin
          oListItem.SubItems.Add('Installed');
        end;
     end;
-    UpdateFileData(TFileItem(oListItem.Data));
+    UpdateFileData(aPackageItem.Files[i]);
     //Items.AddObject(nil, FConfig.Items[i].Name, FConfig.Items[i]);
 
   end;
