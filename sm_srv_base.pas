@@ -134,13 +134,13 @@ begin
                    TempNode.AppendChild(Description);
                    FileItemNode.AppendChild(TempNode);
                    end;
-              for j := 0 to oFileItem.SubFiles.Count - 1 do
+           {   for j := 0 to oFileItem.SubFiles.Count - 1 do
                 begin
                    SubFileNode:=oXMLDocument.CreateElement('subfile');
                    TDOMElement(SubFileNode).SetAttribute('filename',oFileItem.SubFiles[j].FileName);
                    TDOMElement(SubFileNode).SetAttribute('filepath',oFileItem.SubFiles[j].UnpPath);
                    FileItemNode.AppendChild(SubFileNode);
-                end;
+                end; }
              PackageNode.AppendChild(FileItemNode);
             end;
        vRoot.AppendChild(PackageNode);

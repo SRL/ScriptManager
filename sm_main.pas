@@ -76,7 +76,7 @@ begin
   Repository := TServerStorage.Create();
   Repository.LoadFromXmlStream(XML);
  // Repository.ToFileItemEx;
- // Repository.SaveLocalXMLRegistry('E:\Coding\ScriptManager\saved_registry.xml');
+  Repository.SaveLocalXMLRegistry('saved_registry.xml');
   Local := TClientStorage.Create();
   Local.LoadLocalXMLRegistry('saved_registry.xml');
   Local.CheckStorage(Repository);
@@ -141,7 +141,7 @@ begin
     end;
    oFileItem.Version:=rep.Version;
    oFileItem.DateModify:=rep.DateModify;
-
+ {
    if rep.SubFiles.Count > 0 then
     begin
     oFileItem.SubFiles.Clear;
@@ -153,14 +153,20 @@ begin
       end;
     end else
     begin
-     oFileItem.SubFiles.Clear;
-    end;
+    oFileItem.SubFiles.Clear;
+    for i:=0 to rep.SubFiles.Count-1 do
+      begin
+        sItem:=oFileItem.SubFiles.AddItem;
+        sItem.FileName:=rep.SubFiles[i].FileName;
+        sItem.UnpPath:=rep.SubFiles[i].UnpPath;
+      end;
+    end;  }
    oFileItem.Author:=rep.Author;
    oFileItem.EMail:=rep.EMail;
    getScript(rep);
-   Local.Items[index].Files.ItemsEx[ListView1.Selected.Index].Installed:=oFileItem.Installed;
+   //Local.Items[index].Files.ItemsEx[ListView1.Selected.Index].Installed:=oFileItem.Installed;
    Local.UpdateLocalXMLRegistry('saved_registry.xml');
-   LoadPackageToListView(Local.Items[index],index);
+   LoadPackageToListView(Repository.Items[index],index);
   // oFileItem
 
 end;
@@ -168,8 +174,8 @@ end;
 function TForm1.GetScript(Script: TFileItem): boolean;
 var
  Downloader: TDownloader;
- ScriptPack: TStringStream;
-   ScriptTar: TMemoryStream;
+ ScriptPack: TMemoryStream;
+ ScriptTar: TMemoryStream;
  unppath,s:string;//just test variable
  TA: TTarArchive;
  DirRec : TTarDirRec;
@@ -177,20 +183,14 @@ var
  i: integer;
 begin
  result:=false;
- //scriptPack:=TFileStream.Create(GetPackageUrl(script.FileName),fmCreate);
- //scriptPack:=TMemoryStream.Create;
+ scriptTar:=TMemoryStream.Create;
+// scriptPack:=TMemoryStream.Create;
  Downloader:=TDownloader.Create('http://localhost/'+GetPackageUrl(Script.filename));
  try
- s:=Downloader.GetPage('http://localhost/'+GetPackageUrl(Script.filename));
- scriptPack:=TStringStream.Create(s);
- scriptPack.Position:=0;
-// scriptPack.Seek(0,0);
- i:=scriptPack.Size;
- scriptTar:=TMemoryStream.Create;
- Downloader.DecompressBZip2(scriptPack,scriptTar);
-  if scriptTar.Size > 0 then
-    begin
-     i:=0;
+// s:=Downloader.GetPage('http://localhost/'+GetPackageUrl(Script.filename));
+ //scriptPack:=TStringStream.Create(s);
+ ScriptTar:=Downloader.GetFile('http://localhost/'+GetPackageUrl(Script.filename));
+    i:=0;
      scriptTar.Position:=0;
      TA:=TTarArchive.Create(scriptTar);
      TA.Reset;
@@ -211,19 +211,19 @@ begin
              FS.Free;
              result:=true;
             end;
-     if script.SubFiles.Count>0 then
-        begin
+     if (script.SubFiles.Count > 0) then
+      if (i < script.SubFiles.Count) then
+      begin
          if eq(DirRec.Name, script.SubFiles[i].FileName) then
            begin
              FS := TFileStream.Create(UTF8ToSys('J:/' +dirrec.name),fmCreate);
               TA.ReadFile(fs);
              FS.Free;
              result:=true;
+             inc(i);
            end;
         end;
-        inc(i);
        end;
-    end;
  finally
    downloader.Free;
    scriptPack.Free;

@@ -189,12 +189,12 @@ procedure TClientStorage.LoadLocalXMLRegistry(aFileName: string);
       begin
         oNode1:=oNode.ChildNodes[j];
 
-        if LowerCase(oNode1.NodeName)='subfile' then
+      {  if LowerCase(oNode1.NodeName)='subfile' then
         begin
           sItem:=oFileItem.SubFiles.AddItem;
           sItem.FileName:=oNode1.Attributes.GetNamedItem('filename').NodeValue;
           sItem.UnpPath:=oNode1.Attributes.GetNamedItem('filepath').NodeValue;
-        end else
+        end else  }
 
         if LowerCase(oNode1.NodeName)='description' then
         begin
@@ -273,13 +273,13 @@ begin
                    TempNode.AppendChild(Description);
                    FileItemNode.AppendChild(TempNode);
                    end;
-              for j := 0 to oFileItem.SubFiles.Count - 1 do
+             { for j := 0 to oFileItem.SubFiles.Count - 1 do
                 begin
                    SubFileNode:=oXMLDocument.CreateElement('subfile');
                    TDOMElement(SubFileNode).SetAttribute('filename',oFileItem.SubFiles[j].FileName);
                    TDOMElement(SubFileNode).SetAttribute('filepath',oFileItem.SubFiles[j].UnpPath);
                    FileItemNode.AppendChild(SubFileNode);
-                end;
+                end; }
              PackageNode.AppendChild(FileItemNode);
             end;
        vRoot.AppendChild(PackageNode);

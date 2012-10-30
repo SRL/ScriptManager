@@ -1,6 +1,7 @@
 unit sm_web;
 
-{$mode objfpc}{$H+}
+//{$mode objfpc}{$H+}
+{$mode delphi}
 
 interface
 
@@ -21,10 +22,9 @@ TDownloader = Class(TObject)
   public
      procedure Download(var st: TFileStream);overload;
      procedure Download(var st: TMemoryStream);overload;
-     procedure Download(var st: TStringStream);overload;
-     function GetPage(URL: String): String;
-     //remove that block when we integrate that to Simba
-     procedure DecompressBZip2(const input : TStream;var res: TMemoryStream; const BlockSize : Cardinal = 4096);
+     function GetFile(URL: String): TMemoryStream;
+     //working in windows perfectly
+     procedure DecompressBZip2(const Input: TStream; var Output: TMemoryStream; const BlockSize: Cardinal = 4096);
     //
     function Decompress(const SourceFile: TStringStream;TargetFile: string): boolean;
     constructor Create(url: string);
@@ -41,25 +41,29 @@ begin
   FURl:=url;
 end;
 
-function TDownloader.GetPage(URL: String): String;
+function TDownloader.GetFile(URL: String): TMemoryStream;
 var
   HTTP : THTTPSend;
+  S: string;
+  i: integer;
 begin;
   HTTP := THTTPSend.Create;
 
   HTTP.UserAgent := 'Mozilla 4.0/ (compatible Synapse)';
-
-  Result := '';
   try
     if HTTP.HTTPMethod('GET', URL) then
     begin
-      SetLength(result,HTTP.Document.Size);
-      HTTP.Document.Read(result[1],length(result));
+     // SetLength(result,HTTP.Document.Size);
+      //HTTP.Document.Read(result[1],length(result));
+     s:=URL;
+     i:=HTTP.Document.Size;
+     DecompressBZIP2(HTTP.Document,result);
     end;
   finally
     HTTP.Free;
   end;
 end;
+
 
 procedure TDownloader.Download(var st: TFileStream); overload;
 var
@@ -84,25 +88,13 @@ begin
   http.Free;
   end;
 end;
-procedure TDownloader.Download(var st: TStringStream); overload;
-var
-  http: THttpSend;
-  s: String;
-begin
-  http:=THttpSend.Create;
-  try
-    s:=GetPage(FUrl);
-    st:=TStringStream.Create(s);
-  finally
-  http.Free;
-  end;
-end;
 
-procedure TDownloader.DecompressBZip2(const input: TStream; var res: TMemoryStream;
+
+{procedure TDownloader.DecompressBZip2(const input: TStream; var res: TMemoryStream;
   const BlockSize: Cardinal);
-var
+{var
   Unzipper : TDecompressBzip2Stream;
-  Blocks : array [0..4096] of Byte;
+  Blocks : array [0..4096] of cardinal;
   ReadSize : cardinal;
   i,j: integer;
 begin
@@ -128,7 +120,38 @@ begin
        raise Exception.CreateFmt('Decompression error: %s %d',[e.message,e.errcode]);
   end;
   Unzipper.Free;
+end; }
+
+procedure TDownloader.DecompressBZip2(const Input: TStream; var Output: TMemoryStream; const BlockSize: Cardinal = 4096);
+var
+  Buffer: Pointer;
+  ReadSize: Cardinal;
+  temp: TMemoryStream;
+begin
+  temp:=TMemoryStream.Create;
+  with TDecompressBzip2Stream.Create(Input) do
+  try
+    GetMem(Buffer, BlockSize+1);
+    try
+      repeat
+        ReadSize := Read(Buffer^, BlockSize);
+        temp.write(Buffer^, ReadSize);
+      until (ReadSize = 0);
+      temp.Position:=0;
+      OutPut:=TMemoryStream.Create;
+      OutPut.LoadFromStream(temp);
+    finally
+      Freemem(Buffer);
+    end;
+  finally
+    Free;
+  end;
 end;
+
+
+
+
+
 function TDownloader.Decompress(const SourceFile: TStringStream;TargetFile: string): boolean;
 var
   Decompressed:TDecompressBzip2Stream;
