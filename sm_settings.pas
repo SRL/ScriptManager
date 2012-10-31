@@ -18,7 +18,24 @@ type TOption = record
     Simba: string;//path to Simba folder
     Simba_include: string;//path to Simba include folder
   end;
+procedure SetOptionsPaths(Server,Storage,SimbaPath: string;var opt: TOption);
 implementation
+
+procedure SetOptionsPaths(Server, Storage, SimbaPath: string; var opt: TOption);
+begin
+   with opt do
+   begin
+     XMLStorage:= storage;
+     XMLSrvDesc:=Server;
+     Simba:=SimbaPath;
+     Simba_include:=Simba+'Includes/';
+     Simba_SPS:=Simba_include+'SPS/';
+     Simba_Scripts:=Simba+'Scripts/';
+     Simba_Plugins:=Simba+'Plugins/';
+     Simba_Fonts:=Simba+'Fonts/';
+     Simba_SRL:=Simba_include+'SRL/';
+   end;
+end;
 
 end.
 

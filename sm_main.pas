@@ -15,6 +15,7 @@ type
   TForm1 = class(TForm)
     GroupBox1: TGroupBox;
     GroupBox2: TGroupBox;
+    btns: TImageList;
     ListBox1: TListBox;
     ListView1: TListView;
     MainMenu1: TMainMenu;
@@ -32,17 +33,24 @@ type
     TabSheet1: TTabSheet;
     TabSheet2: TTabSheet;
     ToolBar1: TToolBar;
+    ToolButton1: TToolButton;
+    ToolButton2: TToolButton;
+    ToolButton3: TToolButton;
+    ToolButton4: TToolButton;
+    ToolButton5: TToolButton;
     TreeView1: TTreeView;
     procedure FormCreate(Sender: TObject);
     procedure ListView1Click(Sender: TObject);
     procedure ListView1MouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
+    procedure ToolButton1Click(Sender: TObject);
     procedure TreeView1Click(Sender: TObject);
     procedure InstallClick(Sender: TObject);
   private
     procedure LoadPackageToListView(aPackageItem: TPackageItem;idx: integer);
     procedure LoadToTreeView;
     procedure UpdateFileData(aFileItem: TFileItem);
+    procedure UpdateStats();
     { private declarations }
   public
     { public declarations }
@@ -66,20 +74,9 @@ implementation
 procedure TForm1.FormCreate(Sender: TObject);
 var
   XML: TMemoryStream;
-begin
-   with option do
-   begin
-     XMLStorage:= 'saved_registry.xml';
-     XMLSrvDesc:='http://localhost/';
-     Simba:='C:/Simba_2/';
-     Simba_include:=Simba+'Includes/';
-     Simba_SPS:=Simba_include+'SPS/';
-     Simba_Scripts:=Simba+'Scripts/';
-     Simba_Plugins:=Simba+'Plugins/';
-     Simba_Fonts:=Simba+'Fonts/';
-     Simba_SRL:=Simba_include+'SRL/';
-   end;
- XML:=TMemoryStream.Create;
+  begin
+SetOptionsPaths('http://localhost/','saved_registry.xml','C:/Simba_2/',option);
+  XML:=TMemoryStream.Create;
   Loader:=Tdownloader.Create(option.XMLSrvDesc+'server.xml');
   loader.Download(XML);
   XML.Position:=0;
@@ -89,8 +86,8 @@ begin
  // Repository.SaveLocalXMLRegistry('saved_registry.xml');
   Local := TClientStorage.Create();
   Local.LoadLocalXMLRegistry(option.XMLStorage);
-  Local.CheckStorage(Repository);
   Local.CheckUpdates(Repository);
+  UpdateStats;
   Local.UpdateLocalXMLRegistry(option.XMLStorage);
  // Local.Free;
   //Local:=TScriptStorage.Create;
@@ -99,7 +96,6 @@ begin
   //Repository.SaveLocalXMLRegistry('j:\test.xml');
   LoadToTreeView;
 end;
-
 
 procedure TForm1.ListView1Click(Sender: TObject);
 begin
@@ -124,6 +120,15 @@ begin
       ManagerPopup.Items[0].Caption:='Update';
      ManagerPopup.PopUp;
    end;
+end;
+
+procedure TForm1.ToolButton1Click(Sender: TObject);
+begin
+  local.UpdateLocalXMLRegistry(option.XMLStorage);
+  local.Free;
+  repository.Free;
+  loader.Free;
+ Application.Terminate;
 end;
 
 
@@ -175,7 +180,7 @@ begin
     loc.Author:=rep.Author;
     loc.EMail:=rep.EMail;
     loc.FileName:=rep.FileName;
- // .Assign(oFileItem);
+   UpdateStats;
    Local.UpdateLocalXMLRegistry('saved_registry.xml');
    LoadPackageToListView(Repository.Items[index],index);
   // oFileItem
@@ -263,6 +268,46 @@ begin
      ListBox1.Items.Add (sItem.FileName);
   end;
 
+end;
+
+procedure TForm1.UpdateStats();
+procedure UpdateStatusBar(category ,scripts, installed, updates: integer);
+begin
+ with StatusBar1 do
+  begin
+   Panels[0].Text:='Categories:'+#13+IntToStr(category);
+   Panels[1].Text:='Scripts:'+#13+IntToStr(scripts);
+   Panels[2].Text:='Installed:'+#13+IntToStr(installed);
+   Panels[3].Text:='Available updates:'+#13+IntToStr(updates);
+  end;
+end;
+var
+  i,j: integer;
+  installed,updates: integer;
+  catcount, scriptcount: integer;
+  CatItem: TPackageItem;
+  ExItem: TFileItemEx;
+begin
+  Local.CheckStorage(Repository);
+  catcount:=Repository.Count;
+  scriptcount:=0;
+  installed:=0;
+  updates:=0;
+  for i:=0 to Repository.Count -1 do
+   begin
+     CatItem:=Repository.Items[i];
+     scriptcount:=scriptcount+CatItem.Files.Count;
+   end;
+  for i:=0 to local.Count-1 do
+    begin
+      for j:=0 to local.Items[i].Files.Count-1 do
+        begin
+          ExItem:=local.Items[i].Files.ItemsEx[j];
+          if ExItem.Installed > 0 then inc(installed);
+          if ExItem.Update > 0 then inc(updates);
+        end;
+    end;
+  UpdateStatusBar(catcount,scriptcount,installed,updates);
 end;
 
 end.

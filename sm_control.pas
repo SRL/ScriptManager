@@ -79,6 +79,7 @@ var
  i: integer;
 begin
  sName:= opt.Simba_Scripts+GetScriptName(Script.FileName);
+ i:=0;
  result:=false;
   if fileexists(sName) then
    begin
@@ -91,6 +92,7 @@ begin
        sfName:=convertPAth(script.SubFiles[i].UnpPath,opt)+script.SubFiles[i].FileName;
         if fileexists(sfName) then
           deletefile(sfName);
+        inc(i);
       end;
 end;
 
