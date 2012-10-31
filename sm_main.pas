@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, Menus,
-  ComCtrls, ExtCtrls, StdCtrls, sm_srv_base,sm_client_base, sm_types,sm_utils, sm_web,sm_control;
+  ComCtrls, ExtCtrls, StdCtrls, sm_srv_base,sm_client_base, sm_types,sm_utils, sm_web,sm_settings, sm_control;
 
 type
 
@@ -39,7 +39,6 @@ type
       Shift: TShiftState; X, Y: Integer);
     procedure TreeView1Click(Sender: TObject);
     procedure InstallClick(Sender: TObject);
-    function RemoveScript(Script: TFileItemEx): boolean;
   private
     procedure LoadPackageToListView(aPackageItem: TPackageItem;idx: integer);
     procedure LoadToTreeView;
@@ -56,6 +55,7 @@ var
     Loader: TDownloader;
   ManagerPopup: TPopupMenu;
   Index: integer;//current selected category index
+  option: TOption;//just test options system
 
 implementation
 
@@ -67,9 +67,20 @@ procedure TForm1.FormCreate(Sender: TObject);
 var
   XML: TMemoryStream;
 begin
-  //XML:=TFileStream.Create('server.xml',fmCreate);
+   with option do
+   begin
+     XMLStorage:= 'saved_registry.xml';
+     XMLSrvDesc:='http://localhost/';
+     Simba:='C:/Simba_2/';
+     Simba_include:=Simba+'Includes/';
+     Simba_SPS:=Simba_include+'SPS/';
+     Simba_Scripts:=Simba+'Scripts/';
+     Simba_Plugins:=Simba+'Plugins/';
+     Simba_Fonts:=Simba+'Fonts/';
+     Simba_SRL:=Simba_include+'SRL/';
+   end;
  XML:=TMemoryStream.Create;
-  Loader:=Tdownloader.Create('http://localhost/server.xml');
+  Loader:=Tdownloader.Create(option.XMLSrvDesc+'server.xml');
   loader.Download(XML);
   XML.Position:=0;
   Repository := TServerStorage.Create();
@@ -77,10 +88,10 @@ begin
  // Repository.ToFileItemEx;
  // Repository.SaveLocalXMLRegistry('saved_registry.xml');
   Local := TClientStorage.Create();
-  Local.LoadLocalXMLRegistry('saved_registry.xml');
+  Local.LoadLocalXMLRegistry(option.XMLStorage);
   Local.CheckStorage(Repository);
   Local.CheckUpdates(Repository);
-  Local.UpdateLocalXMLRegistry('saved_registry.xml');
+  Local.UpdateLocalXMLRegistry(option.XMLStorage);
  // Local.Free;
   //Local:=TScriptStorage.Create;
   //Local.LoadLocalXMLRegistry('E:\Coding\ScriptManager\saved_registry_up.xml');
@@ -133,11 +144,11 @@ var
 begin
    rep:=Repository.Items[index].Files.Items[ListView1.Selected.Index];
    loc:= Local.Items[index].Files.ItemsEx[ListView1.Selected.Index];
-   getScript(rep);
+  // getScript(rep,option);
    //ShowMessage(GetPackageUrl(oFileItem.filename));  //just function testing
    case  loc.Installed of
-       0: loc.Installed:=1;
-       1: loc.Installed:=0;
+       0:begin loc.Installed:=1; getScript(rep,option);  end;
+       1:begin loc.Installed:=0; RemoveScript(rep,option); end;
     end;
     loc.Version:=rep.Version;
     loc.DateModify:=rep.DateModify;
@@ -172,11 +183,6 @@ begin
 end;
 
 
-
-function TForm1.RemoveScript(Script: TFileItemEx): boolean;
-begin
-
-end;
 
 procedure TForm1.LoadPackageToListView(aPackageItem: TPackageItem;idx: integer);
 var
