@@ -7,6 +7,7 @@ object Form1: TForm1
   ClientHeight = 613
   ClientWidth = 914
   Menu = MainMenu1
+  OnClose = FormClose
   OnCreate = FormCreate
   LCLVersion = '0.9.30.4'
   object ToolBar1: TToolBar
@@ -37,6 +38,7 @@ object Form1: TForm1
       Top = 2
       Caption = 'ToolButton3'
       ImageIndex = 1
+      OnClick = ToolButton3Click
     end
     object ToolButton4: TToolButton
       Tag = 2
@@ -44,6 +46,7 @@ object Form1: TForm1
       Top = 2
       Caption = 'ToolButton4'
       ImageIndex = 2
+      OnClick = ToolButton4Click
     end
     object ToolButton5: TToolButton
       Left = 74
@@ -216,9 +219,6 @@ object Form1: TForm1
     object MenuItem4: TMenuItem
       Caption = 'Install'
       OnClick = InstallClick
-    end
-    object MenuItem5: TMenuItem
-      Caption = 'Checking updates'
     end
     object MenuItem6: TMenuItem
       Caption = 'Force update'

@@ -37,7 +37,7 @@ begin
              if not DirectoryExists(opt.Simba + DirRec.Name) and not CreateDir(opt.Simba + DirRec.Name) then
             begin
            // Succ := false;
-            break;
+            //break;
         end;
      end;
      if eq(DirRec.Name, GetScriptName(script.FileName)) then
@@ -61,8 +61,8 @@ begin
         end;
        end;
  finally
-   downloader.Free;
-   scriptTar.Free;
+   FreeAndNil(downloader);
+   FreeAndNil(scriptTar);
  end;
 
 end;

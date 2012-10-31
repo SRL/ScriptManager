@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, Menus,
-  ComCtrls, ExtCtrls, StdCtrls, sm_srv_base,sm_client_base, sm_types,sm_utils, sm_web,sm_settings, sm_control;
+  ComCtrls, ExtCtrls, StdCtrls,sm_srv_base,sm_client_base, sm_types,sm_utils, sm_web,sm_settings, sm_control;
 
 type
 
@@ -24,7 +24,6 @@ type
     MenuItem2: TMenuItem;
     MenuItem3: TMenuItem;
     MenuItem4: TMenuItem;
-    MenuItem5: TMenuItem;
     MenuItem6: TMenuItem;
     PageControl1: TPageControl;
     ManagerPopup: TPopupMenu;
@@ -39,11 +38,14 @@ type
     ToolButton4: TToolButton;
     ToolButton5: TToolButton;
     TreeView1: TTreeView;
+    procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate(Sender: TObject);
     procedure ListView1Click(Sender: TObject);
     procedure ListView1MouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure ToolButton1Click(Sender: TObject);
+    procedure ToolButton3Click(Sender: TObject);
+    procedure ToolButton4Click(Sender: TObject);
     procedure TreeView1Click(Sender: TObject);
     procedure InstallClick(Sender: TObject);
   private
@@ -97,6 +99,11 @@ SetOptionsPaths('http://localhost/','saved_registry.xml','C:/Simba_2/',option);
   LoadToTreeView;
 end;
 
+procedure TForm1.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+begin
+
+end;
+
 procedure TForm1.ListView1Click(Sender: TObject);
 begin
   if not assigned(ListView1.Selected) then exit;
@@ -116,6 +123,10 @@ begin
        0:ManagerPopup.Items[0].Caption:='Install';
        1:ManagerPopup.Items[0].Caption:='Uninstall';
     end;
+     case oFileItem.Update of
+       0:ManagerPopup.Items[1].Caption:='Force update';
+       1:ManagerPopup.Items[1].Caption:='Update';
+    end;
      if oFileItem.Update> 0 then
       ManagerPopup.Items[0].Caption:='Update';
      ManagerPopup.PopUp;
@@ -124,12 +135,34 @@ end;
 
 procedure TForm1.ToolButton1Click(Sender: TObject);
 begin
-  local.UpdateLocalXMLRegistry(option.XMLStorage);
-  local.Free;
-  repository.Free;
-  loader.Free;
  Application.Terminate;
 end;
+
+procedure TForm1.ToolButton3Click(Sender: TObject);
+begin
+  Local.CheckUpdates(Repository);
+  UpdateStats;
+end;
+
+procedure TForm1.ToolButton4Click(Sender: TObject);
+var
+  i,j: integer;
+  updated: integer;
+  CatItem: TPackageItem;
+  ExItem: TFileItemEx;
+begin
+  Local.CheckStorage(Repository);
+  updated:=0;
+  for i:=0 to local.Count-1 do
+    begin
+      for j:=0 to local.Items[i].Files.Count-1 do
+        begin
+          ExItem:=local.Items[i].Files.ItemsEx[j];
+          if ExItem.Update > 0 then
+           if UpdateScript(Repository.Items[i].Files[j]) then
+             inc(updated);
+        end;
+    end;
 
 
 procedure TForm1.TreeView1Click(Sender: TObject);
@@ -144,7 +177,6 @@ procedure TForm1.InstallClick(Sender: TObject);
 var
   loc: TFileItemEx;
    rep: TFileItem;
-   sItem: TSubItem;
    i: integer;
 begin
    rep:=Repository.Items[index].Files.Items[ListView1.Selected.Index];
@@ -180,9 +212,9 @@ begin
     loc.Author:=rep.Author;
     loc.EMail:=rep.EMail;
     loc.FileName:=rep.FileName;
-   UpdateStats;
    Local.UpdateLocalXMLRegistry('saved_registry.xml');
    LoadPackageToListView(Repository.Items[index],index);
+   UpdateStats;
   // oFileItem
 
 end;
@@ -279,6 +311,7 @@ begin
    Panels[1].Text:='Scripts:'+#13+IntToStr(scripts);
    Panels[2].Text:='Installed:'+#13+IntToStr(installed);
    Panels[3].Text:='Available updates:'+#13+IntToStr(updates);
+ //  Panels[4].Text:='Memory: '+#13+IntToStr(getlost);
   end;
 end;
 var
