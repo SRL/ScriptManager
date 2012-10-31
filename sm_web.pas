@@ -141,6 +141,7 @@ begin
       OutPut:=TMemoryStream.Create;
       OutPut.LoadFromStream(temp);
     finally
+      temp.Free;
       Freemem(Buffer);
     end;
   finally
