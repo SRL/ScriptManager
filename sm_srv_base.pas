@@ -12,9 +12,12 @@ type
 
   { TScriptStorage }
 
+  { TServerStorage }
+
   TServerStorage = class(TPackageList)
   public
     procedure LoadFromXmlStream(aFileName: TStream);
+    procedure LoadFromXmlFile(aFileName: string);
     procedure SaveLocalXMLRegistry(aFileName: string);
   end;
 
@@ -97,6 +100,81 @@ begin
   FreeAndNil(oXmlDocument);
 end;
 
+procedure TServerStorage.LoadFromXmlFile(aFileName: string);
+  procedure DoLoadFiles(aParentNode: TDOMNode; aPackageItem: TPackageItem);
+   var
+     I: Integer;
+     j: Integer;
+     oFileItem: TFileItem;
+     oNode,oNode1: TDOMNode;
+     s,p: string;
+     sItem: TSubitem;
+   begin
+     for I := 0 to aParentNode.ChildNodes.Count - 1 do
+     begin
+       oFileItem:=aPackageItem.Files.AddItem;
+
+       oNode:=aParentNode.ChildNodes[i];
+       oFileItem.FileName:= VarToStr(oNode.Attributes.GetNamedItem('filename').NodeValue);
+       oFileItem.Author  := VarToStr(oNode.Attributes.GetNamedItem('author').NodeValue);
+       oFileItem.EMail   := VarToStr(oNode.Attributes.GetNamedItem('email').NodeValue);
+       oFileItem.Version := StrToFloat(VarToStr(oNode.Attributes.GetNamedItem('version').NodeValue));
+
+       s:=VarToStr(oNode.Attributes.GetNamedItem('date_modify').NodeValue);
+
+       //oFileItem.DateModify := StrToDateTime(s);
+         oFileItem.DateModify := SM_StrToDate(s);
+
+       for j := 0 to oNode.ChildNodes.Count - 1 do
+       begin
+         oNode1:=oNode.ChildNodes[j];
+
+         if LowerCase(oNode1.NodeName)='subfile' then
+         begin
+           sItem:=oFileItem.SubFiles.AddItem;
+           sItem.FileName:=oNode1.Attributes.GetNamedItem('filename').NodeValue;
+           sItem.UnpPath:=oNode1.Attributes.GetNamedItem('filepath').NodeValue;
+         end else
+
+         if LowerCase(oNode1.NodeName)='description' then
+         begin
+           oFileItem.Description:=oNode1.TextContent;
+         end;
+
+       end;
+
+     end;
+   end;
+
+
+   procedure DoLoadPackages(aParentNode: TDOMNode);
+   var
+     I: Integer;
+     oNode: TDOMNode;
+     oPackageItem: TPackageItem;
+   begin
+     for I := 0 to aParentNode.ChildNodes.Count - 1 do
+     begin
+       oPackageItem:=AddItem;
+
+       oNode:=aParentNode.ChildNodes[i];
+       oPackageItem.Name:= oNode.Attributes.GetNamedItem('name').NodeValue;
+
+       DoLoadFiles(oNode, oPackageItem);
+     end;
+   end;
+
+ var
+   oXmlDocument: TXmlDocument;
+ begin
+   oXMLDocument:=TXMLDocument.Create;
+   ReadXMLFile(oXmlDocument,aFileName);
+
+   DoLoadPackages (oXmlDocument.DocumentElement);
+
+   FreeAndNil(oXmlDocument);
+
+ end;
 
 procedure TServerStorage.SaveLocalXMLRegistry(aFileName: string);
 var

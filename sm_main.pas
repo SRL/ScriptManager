@@ -10,9 +10,9 @@ uses
 
 type
 
-  { TForm1 }
+  { TSManager }
 
-  TForm1 = class(TForm)
+  TSManager = class(TForm)
     GroupBox1: TGroupBox;
     GroupBox2: TGroupBox;
     btns: TImageList;
@@ -39,7 +39,6 @@ type
     ToolButton5: TToolButton;
     TreeView1: TTreeView;
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
-    procedure FormCreate(Sender: TObject);
     procedure ListView1Click(Sender: TObject);
     procedure ListView1MouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
@@ -50,6 +49,8 @@ type
     procedure TreeView1Click(Sender: TObject);
     procedure InstallClick(Sender: TObject);
     procedure UpdateClick(Sender: TObject);
+    //simba integration
+    procedure SetOptions(SimbaPath,ServerUrl,LocalStoragePath,DescFileName: string;FirstRun: boolean);
   private
     procedure LoadPackageToListView(aPackageItem: TPackageItem;idx: integer);
     procedure LoadToTreeView;
@@ -63,7 +64,7 @@ type
   end; 
 
 var
-  Form1: TForm1;
+  SManager: TSManager;
   Repository: TServerStorage;
   Local: TClientStorage;
   Loader: TDownloader;
@@ -75,33 +76,21 @@ implementation
 
 {$R *.lfm}
 
-{ TForm1 }
+{ TSManager }
 
-procedure TForm1.FormCreate(Sender: TObject);
-begin
-  index:=0;
-  SetOptionsPaths('http://localhost/','saved_registry.xml','C:/Simba_2/',option);
-  GetFromServer();
-  Local := TClientStorage.Create();
-  Local.LoadLocalXMLRegistry(option.XMLStorage);
-  Local.CheckStorage(Repository);
-  Local.UpdateLocalXMLRegistry(option.XMLStorage);
-  UpdateStats;
-  LoadToTreeView;
-end;
 
-procedure TForm1.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+procedure TSManager.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
 
 end;
 
-procedure TForm1.ListView1Click(Sender: TObject);
+procedure TSManager.ListView1Click(Sender: TObject);
 begin
   if not assigned(ListView1.Selected) then exit;
   UpdateFileData (TFileItem(ListView1.Selected.Data));
 end;
 
-procedure TForm1.ListView1MouseDown(Sender: TObject; Button: TMouseButton;
+procedure TSManager.ListView1MouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 var
   oFileItem: TFileItemEx;
@@ -122,17 +111,17 @@ begin
    end;
 end;
 
-procedure TForm1.MenuItem2Click(Sender: TObject);
+procedure TSManager.MenuItem2Click(Sender: TObject);
 begin
  ToolButton1Click(Sender);
 end;
 
-procedure TForm1.ToolButton1Click(Sender: TObject);
+procedure TSManager.ToolButton1Click(Sender: TObject);
 begin
  Application.Terminate;
 end;
 
-procedure TForm1.ToolButton3Click(Sender: TObject);
+procedure TSManager.ToolButton3Click(Sender: TObject);
 begin
   if (index < 0) or (index > TreeView1.Items.Count) then exit;
   ReloadFromServer;
@@ -142,7 +131,7 @@ begin
   UpdateStats;
 end;
 
-procedure TForm1.ToolButton4Click(Sender: TObject);
+procedure TSManager.ToolButton4Click(Sender: TObject);
 var
   i,j: integer;
   ExItem: TFileItemEx;
@@ -170,7 +159,7 @@ begin
    Local.UpdateLocalXMLRegistry(option.XMLStorage);
 end;
 
-procedure TForm1.TreeView1Click(Sender: TObject);
+procedure TSManager.TreeView1Click(Sender: TObject);
 begin
     if not assigned(TreeView1.Selected) then exit;
     index:=TreeView1.Selected.Index;
@@ -178,7 +167,7 @@ begin
     UpdateFileData (TFileItem(ListView1.Items[0].Data));
 end;
 
-procedure TForm1.InstallClick(Sender: TObject);
+procedure TSManager.InstallClick(Sender: TObject);
 var
   loc: TFileItemEx;
    rep: TFileItem;
@@ -203,7 +192,7 @@ begin
 
 end;
 
-procedure TForm1.UpdateClick(Sender: TObject);
+procedure TSManager.UpdateClick(Sender: TObject);
 var
   loc: TFileItemEx;
    rep: TFileItem;
@@ -225,9 +214,39 @@ begin
    UpdateStats;
 end;
 
+Procedure TSManager.SetOptionS(SimbaPath, ServerUrl,
+  LocalStoragePath,DescFileName: string; FirstRun: boolean);
+begin
+  if not FirstRun then
+   begin
+    index:=0;
+    SetOptionsPaths(ServerUrl,LocalStoragePath,SimbaPath,DescFileName,option);
+    GetFromServer();
+    Local := TClientStorage.Create();
+    Local.LoadLocalXMLRegistry(option.XMLStorage);
+    Local.CheckStorage(Repository);
+    Local.UpdateLocalXMLRegistry(option.XMLStorage);
+    UpdateStats;
+    LoadToTreeView;
+   end
+  else
+   begin
+    index:=0;
+    SetOptionsPaths(ServerUrl,LocalStoragePath,SimbaPath,DescFileName,option);
+    GetFromServer();
+    Repository.SaveLocalXMLRegistry(option.XMLStorage);
+    Local := TClientStorage.Create();
+    Local.LoadLocalXMLRegistry(option.XMLStorage);
+    Local.CheckStorage(Repository);
+    Local.UpdateLocalXMLRegistry(option.XMLStorage);
+    UpdateStats;
+    LoadToTreeView;
+   end;
+end;
 
 
-procedure TForm1.LoadPackageToListView(aPackageItem: TPackageItem;idx: integer);
+
+procedure TSManager.LoadPackageToListView(aPackageItem: TPackageItem;idx: integer);
 var
   I: Integer;
   oListItem: TListItem;
@@ -270,7 +289,7 @@ begin
 
 end;
 
-procedure TForm1.LoadToTreeView;
+procedure TSManager.LoadToTreeView;
 var
   I: Integer;
   TempNode: TTreeNode;
@@ -286,7 +305,7 @@ begin
   LoadPackageToListView(TPackageItem(Repository.Items[0]),0);
 end;
 
-procedure TForm1.UpdateFileData(aFileItem: TFileItem);
+procedure TSManager.UpdateFileData(aFileItem: TFileItem);
 var
   I: Integer;
   sItem: TSubItem;
@@ -308,7 +327,7 @@ begin
 
 end;
 
-procedure TForm1.UpdateStats();
+procedure TSManager.UpdateStats();
 procedure UpdateStatusBar(category ,scripts, installed, updates: integer);
 begin
  with StatusBar1 do
@@ -349,13 +368,13 @@ begin
   UpdateStatusBar(catcount,scriptcount,installed,updates);
 end;
 
-procedure TForm1.GetFromServer();
+procedure TSManager.GetFromServer();
 var
   XML: TMemoryStream;
 begin
   XML:=TMemoryStream.Create;
   try
-  Loader:=Tdownloader.Create(option.XMLSrvDesc+'server.xml');
+  Loader:=Tdownloader.Create(option.XMLSrvDesc+option.DescFilename);
   loader.Download(XML);
   XML.Position:=0;
   Repository := TServerStorage.Create();
@@ -366,7 +385,7 @@ begin
   end;
 end;
 {FIXME~!}
-procedure TForm1.ReloadFromServer();
+procedure TSManager.ReloadFromServer();
 var
   XML: TMemoryStream;
 begin
