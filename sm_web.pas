@@ -16,8 +16,6 @@ TDownloader = Class(TObject)
   private
     FUrl: string;
     //this is not useable variables
-    FPath: string;//path to simba script folder
-    FOwerwrite: boolean;//owerwrite file flag
     //end not useable block
   public
      procedure Download(var st: TFileStream);overload;

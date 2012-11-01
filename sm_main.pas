@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, Menus,
-  ComCtrls, ExtCtrls, StdCtrls,sm_srv_base,sm_client_base, sm_types,sm_utils, sm_web,sm_settings, sm_control;
+  ComCtrls, ExtCtrls, StdCtrls,sm_srv_base,sm_client_base, sm_types, sm_web,sm_settings, sm_control;
 
 type
 
@@ -43,16 +43,20 @@ type
     procedure ListView1Click(Sender: TObject);
     procedure ListView1MouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
+    procedure MenuItem2Click(Sender: TObject);
     procedure ToolButton1Click(Sender: TObject);
     procedure ToolButton3Click(Sender: TObject);
     procedure ToolButton4Click(Sender: TObject);
     procedure TreeView1Click(Sender: TObject);
     procedure InstallClick(Sender: TObject);
+    procedure UpdateClick(Sender: TObject);
   private
     procedure LoadPackageToListView(aPackageItem: TPackageItem;idx: integer);
     procedure LoadToTreeView;
     procedure UpdateFileData(aFileItem: TFileItem);
     procedure UpdateStats();
+    procedure GetFromServer();
+    procedure ReloadFromServer();
     { private declarations }
   public
     { public declarations }
@@ -61,8 +65,8 @@ type
 var
   Form1: TForm1;
   Repository: TServerStorage;
-    Local: TClientStorage;
-    Loader: TDownloader;
+  Local: TClientStorage;
+  Loader: TDownloader;
   ManagerPopup: TPopupMenu;
   Index: integer;//current selected category index
   option: TOption;//just test options system
@@ -74,28 +78,15 @@ implementation
 { TForm1 }
 
 procedure TForm1.FormCreate(Sender: TObject);
-var
-  XML: TMemoryStream;
-  begin
-SetOptionsPaths('http://localhost/','saved_registry.xml','C:/Simba_2/',option);
-  XML:=TMemoryStream.Create;
-  Loader:=Tdownloader.Create(option.XMLSrvDesc+'server.xml');
-  loader.Download(XML);
-  XML.Position:=0;
-  Repository := TServerStorage.Create();
-  Repository.LoadFromXmlStream(XML);
- // Repository.ToFileItemEx;
- // Repository.SaveLocalXMLRegistry('saved_registry.xml');
+begin
+  index:=0;
+  SetOptionsPaths('http://localhost/','saved_registry.xml','C:/Simba_2/',option);
+  GetFromServer();
   Local := TClientStorage.Create();
   Local.LoadLocalXMLRegistry(option.XMLStorage);
-  Local.CheckUpdates(Repository);
-  UpdateStats;
+  Local.CheckStorage(Repository);
   Local.UpdateLocalXMLRegistry(option.XMLStorage);
- // Local.Free;
-  //Local:=TScriptStorage.Create;
-  //Local.LoadLocalXMLRegistry('E:\Coding\ScriptManager\saved_registry_up.xml');
- // Local.UpdateLocalXMLRegistry('E:\Coding\ScriptManager\saved_registry_up.xml',Repository);
-  //Repository.SaveLocalXMLRegistry('j:\test.xml');
+  UpdateStats;
   LoadToTreeView;
 end;
 
@@ -127,10 +118,13 @@ begin
        0:ManagerPopup.Items[1].Caption:='Force update';
        1:ManagerPopup.Items[1].Caption:='Update';
     end;
-     if oFileItem.Update> 0 then
-      ManagerPopup.Items[0].Caption:='Update';
      ManagerPopup.PopUp;
    end;
+end;
+
+procedure TForm1.MenuItem2Click(Sender: TObject);
+begin
+ ToolButton1Click(Sender);
 end;
 
 procedure TForm1.ToolButton1Click(Sender: TObject);
@@ -139,31 +133,46 @@ begin
 end;
 
 procedure TForm1.ToolButton3Click(Sender: TObject);
+var
+  i: integer;
 begin
+  if (index < 0) or (index > TreeView1.Items.Count) then exit;
+  ReloadFromServer;
+  Local.CheckStorage(Repository);
+  i:=Local.Count;
   Local.CheckUpdates(Repository);
+  LoadPackageToListView(Repository.Items[index],Index);
   UpdateStats;
 end;
 
 procedure TForm1.ToolButton4Click(Sender: TObject);
 var
   i,j: integer;
-  updated: integer;
   CatItem: TPackageItem;
   ExItem: TFileItemEx;
 begin
   Local.CheckStorage(Repository);
-  updated:=0;
   for i:=0 to local.Count-1 do
     begin
       for j:=0 to local.Items[i].Files.Count-1 do
         begin
           ExItem:=local.Items[i].Files.ItemsEx[j];
-          if ExItem.Update > 0 then
-           if UpdateScript(Repository.Items[i].Files[j]) then
-             inc(updated);
+          if (ExItem.Update > 0) and (ExItem.Installed > 0) then
+           if UpdateScript(Repository.Items[i].Files[j],option) then
+             begin
+             ExItem.Update:=0;
+             ExItem.Version:=Repository.Items[i].Files[j].Version;
+             ExItem.DateModify:=Repository.Items[i].Files[j].DateModify;
+             ExItem.Author:=Repository.Items[i].Files[j].Author;
+             ExItem.Email:=Repository.Items[i].Files[j].Email;
+              Local.UpdateLocalXMLRegistry(option.XMLStorage);
+              UpdateStats;
+              LoadPackageToListView(Repository.Items[i],i);
+             end;
         end;
     end;
-
+   Local.UpdateLocalXMLRegistry(option.XMLStorage);
+end;
 
 procedure TForm1.TreeView1Click(Sender: TObject);
 begin
@@ -177,7 +186,6 @@ procedure TForm1.InstallClick(Sender: TObject);
 var
   loc: TFileItemEx;
    rep: TFileItem;
-   i: integer;
 begin
    rep:=Repository.Items[index].Files.Items[ListView1.Selected.Index];
    loc:= Local.Items[index].Files.ItemsEx[ListView1.Selected.Index];
@@ -189,34 +197,36 @@ begin
     end;
     loc.Version:=rep.Version;
     loc.DateModify:=rep.DateModify;
- {
-   if rep.SubFiles.Count > 0 then
-    begin
-    oFileItem.SubFiles.Clear;
-     for i:=0 to rep.SubFiles.Count-1 do
-      begin
-        sItem:=oFileItem.SubFiles.AddItem;
-        sItem.FileName:=rep.SubFiles[i].FileName;
-        sItem.UnpPath:=rep.SubFiles[i].UnpPath;
-      end;
-    end else
-    begin
-    oFileItem.SubFiles.Clear;
-    for i:=0 to rep.SubFiles.Count-1 do
-      begin
-        sItem:=oFileItem.SubFiles.AddItem;
-        sItem.FileName:=rep.SubFiles[i].FileName;
-        sItem.UnpPath:=rep.SubFiles[i].UnpPath;
-      end;
-    end;  }
     loc.Author:=rep.Author;
     loc.EMail:=rep.EMail;
     loc.FileName:=rep.FileName;
-   Local.UpdateLocalXMLRegistry('saved_registry.xml');
+   Local.UpdateLocalXMLRegistry(option.XMLStorage);
    LoadPackageToListView(Repository.Items[index],index);
    UpdateStats;
   // oFileItem
 
+end;
+
+procedure TForm1.UpdateClick(Sender: TObject);
+var
+  loc: TFileItemEx;
+   rep: TFileItem;
+begin
+   rep:=Repository.Items[index].Files.Items[ListView1.Selected.Index];
+   loc:= Local.Items[index].Files.ItemsEx[ListView1.Selected.Index];
+   if (loc.Installed < 1) then exit;
+   case  loc.update of
+       0:begin  getScript(rep,option);  end;
+       1:begin loc.update:=0; UpdateScript(rep,option); end;
+    end;
+    loc.Version:=rep.Version;
+    loc.DateModify:=rep.DateModify;
+    loc.Author:=rep.Author;
+    loc.EMail:=rep.EMail;
+    loc.FileName:=rep.FileName;
+   Local.UpdateLocalXMLRegistry(option.XMLStorage);
+   LoadPackageToListView(Repository.Items[index],index);
+   UpdateStats;
 end;
 
 
@@ -342,6 +352,41 @@ begin
     end;
   UpdateStatusBar(catcount,scriptcount,installed,updates);
 end;
+
+procedure TForm1.GetFromServer();
+var
+  XML: TMemoryStream;
+begin
+  XML:=TMemoryStream.Create;
+  try
+  Loader:=Tdownloader.Create(option.XMLSrvDesc+'server.xml');
+  loader.Download(XML);
+  XML.Position:=0;
+  Repository := TServerStorage.Create();
+  Repository.LoadFromXmlStream(XML);
+//  Repository.SaveLocalXMLRegistry(option.XMLStorage);
+  finally
+    XML.Free;
+  end;
+end;
+{FIXME~!}
+procedure TForm1.ReloadFromServer();
+var
+  XML: TMemoryStream;
+begin
+  XML:=TMemoryStream.Create;
+  try
+   //Repository.Clear;   always error. Fix me!
+   loader.Download(XML);
+   XML.Position:=0;
+   Repository := TServerStorage.Create();
+   Repository.LoadFromXmlStream(XML);
+   Local.CheckStorage(Repository);
+  finally
+    XML.Free;
+  end;
+
+  end;
 
 end.
 

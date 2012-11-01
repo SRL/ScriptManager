@@ -104,6 +104,8 @@ type
   end;
 
 
+  { TPackageList }
+
   TPackageList = class(TCollection)
   private
     function GetItems(Index: Integer): TPackageItem;
@@ -111,7 +113,7 @@ type
     function AddItem: TPackageItem;
     
     constructor Create;
-
+    procedure Clear();
     function FindByName(aName: string): TPackageItem;
 
     property Items[Index: Integer]: TPackageItem read GetItems; default;
@@ -276,6 +278,12 @@ constructor TPackageList.Create;
 begin
   inherited Create(TPackageItem);
 end;
+
+procedure TPackageList.Clear();
+begin
+  inherited Clear;
+end;
+
 
 
 function TPackageList.FindByName(aName: string): TPackageItem;
