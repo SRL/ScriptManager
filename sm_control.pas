@@ -36,8 +36,6 @@ begin
             begin;
              if not DirectoryExists(opt.Simba + DirRec.Name) and not CreateDir(opt.Simba + DirRec.Name) then
             begin
-           // Succ := false;
-            //break;
         end;
      end;
      if eq(DirRec.Name, GetScriptName(script.FileName)) then
