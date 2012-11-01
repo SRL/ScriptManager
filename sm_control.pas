@@ -15,7 +15,6 @@ function GetScript(Script: TFileItem;opt: TOption): boolean;
 var
  Downloader: TDownloader;
  ScriptTar: TMemoryStream;
- unppath,s:string;//just test variable
  TA: TTarArchive;
  DirRec : TTarDirRec;
  FS : TFileStream;

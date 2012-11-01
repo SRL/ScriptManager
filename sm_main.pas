@@ -133,13 +133,10 @@ begin
 end;
 
 procedure TForm1.ToolButton3Click(Sender: TObject);
-var
-  i: integer;
 begin
   if (index < 0) or (index > TreeView1.Items.Count) then exit;
   ReloadFromServer;
   Local.CheckStorage(Repository);
-  i:=Local.Count;
   Local.CheckUpdates(Repository);
   LoadPackageToListView(Repository.Items[index],Index);
   UpdateStats;
@@ -148,7 +145,6 @@ end;
 procedure TForm1.ToolButton4Click(Sender: TObject);
 var
   i,j: integer;
-  CatItem: TPackageItem;
   ExItem: TFileItemEx;
 begin
   Local.CheckStorage(Repository);
